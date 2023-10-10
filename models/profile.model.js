@@ -5,7 +5,7 @@ const _getUser = async (username) => {
     try {
         const id = await userId(username);
         return db("users")
-            .select("firstname", "lastname", "email", "info")
+            .select("firstname", "lastname", "email", "info", "role")
             .where({ id });
     } catch (error) {
         console.log(error);
@@ -18,6 +18,7 @@ const _updateUser = async (user, username) => {
 
     for (const key in user) {
         if (Object.hasOwnProperty.call(user, key)) {
+            if (key === "username") continue;
             extractedProperties[key] = user[key];
         }
     };
@@ -26,7 +27,7 @@ const _updateUser = async (user, username) => {
         return db("users")
             .where({ id })
             .update(extractedProperties)
-            .returning(["firstname", "lastname", "email", "info"]);
+            .returning(["firstname", "lastname", "email", "info", "role"]);
     } catch (error) {
         console.log(error);
     };

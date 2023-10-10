@@ -30,10 +30,13 @@ const login = async (req, res) => {
 
         const username = row[0].username;
         const secret = process.env.ACCESS_TOKEN_SECRET;
-        const accessToken = jwt.sign({ username }, secret, { expiresIn: '1200s' });
+        const accessToken = jwt.sign({ username }, secret, { expiresIn: 3600000 });
+        const refreshToken = jwt.sign({ username }, secret, { expiresIn: 86400000 });
+        
+        res.cookie("token", accessToken, { httpOnly: true, maxAge: 3600000 }); // 1 hour in seconds
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 86400000 }); //24 hours in seconds
 
-        res.cookie("token", accessToken, { httpOnly: true, maxAge: 60 * 1000 });
-        res.json({ token: accessToken });
+        res.status(200).json({ token: accessToken, refreshToken: refreshToken});
     } catch (err) {
         console.log(err)
     }
@@ -42,6 +45,7 @@ const login = async (req, res) => {
 const logout = (req, res) => {
     req.user = null;
     res.clearCookie('token');
+    res.clearCookie('refreshToken');
     res.status(200).json({ message: 'Logout successful' });
 };
 

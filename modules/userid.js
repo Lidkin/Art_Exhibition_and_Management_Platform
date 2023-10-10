@@ -1,3 +1,4 @@
+const { db } = require('../config/db.js');
 
 const userId = async (username) => {
     try {

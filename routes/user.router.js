@@ -9,4 +9,8 @@ uRouter.post('/login', login);
 
 uRouter.post('/logout', verifyToken, logout);
 
+uRouter.get("/verify", verifyToken, (req, res) => {
+    res.sendStatus(200);
+});
+
 module.exports = { uRouter };

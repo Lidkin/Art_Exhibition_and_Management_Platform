@@ -4,7 +4,6 @@ require('dotenv').config();
 const getUser = async (req, res) => {
     try {
         const name = req.user.username;
-        console.log(name)
         const row = await _getUser(name);
         res.json(row);
     } catch (error) {
