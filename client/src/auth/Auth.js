@@ -2,12 +2,11 @@ import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import jwt from 'jwt-decode';
-import { AppContext, UserContext } from "../App";
+import { AppContext } from "../App";
 
 export const Auth = (props) => {
 
     const { userToken, setToken } = useContext(AppContext); 
-    const { setUserinfo } = useContext(UserContext);
     const [redirect, setRedirect] = useState(null);
     const navigate = useNavigate();
     let intervalId;

@@ -40,4 +40,4 @@ const _sendArtImage = (username, opencall_id) => {
 
 }
 
-module.exports = { _addArtImage, _allArtImages };
+module.exports = { _addArtImage, _allArtImages, _getArtImage };

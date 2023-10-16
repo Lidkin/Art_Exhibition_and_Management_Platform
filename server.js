@@ -9,6 +9,9 @@ const app = express();
 const { uRouter } = require('./routes/user.router.js');
 const { pRouter } = require('./routes/profile.router.js');
 const { gRouter } = require('./routes/gallery.router.js');
+const { lRouter } = require('./routes/location.router.js');
+const { oRouter } = require('./routes/opencall.router.js');
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -23,6 +26,7 @@ app.use((error, req, res, next) => {
 app.use('/api/user', uRouter);
 app.use('/api/profile', pRouter);
 app.use('/api/gallery', gRouter);
-// app.use('/api/opencall');
+app.use('/api/location', lRouter);
+app.use('/api/opencall', oRouter);
 
 app.listen(process.env.PORT);

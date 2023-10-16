@@ -1,14 +1,16 @@
 import React from 'react';
+import { Routes, Route } from "react-router-dom";
+import AddArt from './ArtistComponents/AddArt';
+import CuratorGallery from './CuratorComponents/OpenCall';
 
-function Curator() {
+function Curator(props) {
 
     return (
-        <div>
-            <h1>Protected Curator Page</h1>
-            <p>
-                This page contains content or actions that are available to
-                authenticated users only.
-            </p>
+        <div className='curator'>
+            <Routes>
+                <Route path="/gallery" element={<CuratorGallery title="Curator Gallery" />} />
+            </Routes>
+            <AddArt />
         </div>
     );
 }
