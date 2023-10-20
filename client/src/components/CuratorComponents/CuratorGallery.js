@@ -9,9 +9,10 @@ import {
     DialogTitle,
     IconButton,
 } from "@mui/material";
+import { ZoomIn } from "@mui/icons-material";
 import React from 'react';
 
-function ArtistGallery(props) {
+function CuratorGallery(props) {
     const [itemData, setItemdata] = useState(null);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
@@ -21,11 +22,7 @@ function ArtistGallery(props) {
     useEffect(() => {
         const getAllArtImages = async () => {
             try {
-                const res = await axios.get("/api/gallery/getimages");
-                if (res.status === 200) {
-                    setItemdata(res.data);
-                    setLoading(false);
-                }
+                const res = await axios.get("/api/gallery/");                
             } catch (error) {
                 console.log(error);
                 setLoading(false);
@@ -58,6 +55,9 @@ function ArtistGallery(props) {
                                     alt={item.name}
                                     loading="lazy"
                                 />
+                                <IconButton className="zoom-icon">
+                                    <ZoomIn />
+                                </IconButton>
                             </ImageListItem>
                         ))}
                     </ImageList>
@@ -88,4 +88,4 @@ function ArtistGallery(props) {
     );
 };
 
-export default ArtistGallery;
+export default CuratorGallery;

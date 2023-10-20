@@ -1,16 +1,19 @@
 import React from 'react';
 import { Routes, Route } from "react-router-dom";
-import AddArt from './ArtistComponents/AddArt';
-import CuratorGallery from './CuratorComponents/OpenCall';
+//import SelectArt from './CuratorComponents/SelectArt';
+import AddOpencall from './CuratorComponents/AddOpencall';
+import Gallery from './CuratorComponents/CuratorGallery';
+import Opencall from './CuratorComponents/CuratorOpencall';
 
 function Curator(props) {
 
     return (
         <div className='curator'>
             <Routes>
-                <Route path="/gallery" element={<CuratorGallery title="Curator Gallery" />} />
+                <Route path="/opencall" element={<Opencall title="Opencall" />} />
+                <Route path="/gallery" element={<Gallery title="Gallery" />} />
             </Routes>
-            <AddArt />
+            <AddOpencall />
         </div>
     );
 }

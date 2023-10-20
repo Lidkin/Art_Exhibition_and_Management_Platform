@@ -9,7 +9,7 @@ const Profile = (props) => {
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [updatedUser, setUpdatedUser] = useState({});
-    const { setRole } = useContext(UserContext);
+    const { userRole, setUserRole } = useContext(UserContext);
 
     const navigate = useNavigate();
 
@@ -40,8 +40,8 @@ const Profile = (props) => {
             if (res.status === 200) {
                 setUser(res.data);
                 setIsEditing(false);
-                setRole(updatedUser.role);
-                navigate("/profile");
+                setUserRole(updatedUser.role);
+                navigate('/profile');
             };
         } catch (error) {
             console.error('Error updating user data:', error);

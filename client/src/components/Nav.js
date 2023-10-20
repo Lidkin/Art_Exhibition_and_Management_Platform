@@ -1,15 +1,39 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Stack } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 
 import { AppContext, UserContext } from "../App";
 
 const Nav = (props) => {
     const { userToken, setToken } = useContext(AppContext);
-    const { userRole, setRole } = useContext(UserContext);
+    const { userRole } = useContext(UserContext);
+    const [role, setRole] = useState(null);
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        console.log(role)
+        const roleChanged = async () => {
+            try {
+                if (userRole === null) {
+                    const res = await axios.get("/api/user/role");
+                    if (res.status === 200) {
+                        setRole(res.data);
+                    } else {
+                        setRole(null);
+                        navigate("/");
+                    }
+                } else { 
+                    setRole(userRole);
+                };
+            } catch (error) {
+                setRole(null);
+                console.log("user role", error);
+            }
+        };
+        roleChanged();
+    });
 
     const logout = async () => {
         try {
@@ -36,22 +60,22 @@ const Nav = (props) => {
             <Button component={Link} to="/">
                 Home
             </Button>
-            {userRole === null ? (<Button component={Link} to="/login">
+            {role === null ? (<Button component={Link} to="/login">
                 Login
             </Button>) : null}
-            {userRole === null ? (<Button component={Link} to="/register">
+            {role === null ? (<Button component={Link} to="/register">
                 Register
             </Button>) : null}
 
-            {userRole !== null ? (<Button onClick={logout}>Logout</Button>) : null}
-            {userRole !== null ? (<Button component={Link} to="/profile">
+            {role !== null ? (<Button onClick={logout}>Logout</Button>) : null}
+            {role !== null ? (<Button component={Link} to="/profile">
                 Profile
             </Button>) : null}
-            {userRole === 'artist' ? (<Button component={Link} to="artist/gallery">
+            {role === 'artist' ? (<Button component={Link} to="artist/gallery">
                 Gallery
             </Button>) : null}
-            {userRole === 'curator' ? (<Button component={Link} to="/curator">
-                Curator
+            {role === 'curator' ? (<Button component={Link} to="curator/opencall">
+                Opencall
             </Button>) : null}
         </Stack>
     );

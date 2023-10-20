@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import jwt from 'jwt-decode';
@@ -6,9 +6,10 @@ import { AppContext } from "../App";
 
 export const Auth = (props) => {
 
-    const { userToken, setToken } = useContext(AppContext); 
+    const { userToken, setToken } = useContext(AppContext);
     const [redirect, setRedirect] = useState(null);
     const navigate = useNavigate();
+    const intervalIdRef = useRef(null);
     let intervalId;
 
     const isAccessTokenExpired = () => {
@@ -19,14 +20,14 @@ export const Auth = (props) => {
 
         try {
             const decodedToken = jwt(userToken.token);
-            console.log("username=>",decodedToken.username);
+            console.log("username=>", decodedToken.username);
             if (!decodedToken || !decodedToken.exp) {
                 return true;
             }
             const currentTimeInSeconds = Math.floor(Date.now() / 1000);
             return decodedToken.exp < currentTimeInSeconds;
         } catch (error) {
-            console.log("in Auth -access token expired",error);
+            console.log("in Auth -access token expired", error);
             return true;
         }
     }
@@ -40,7 +41,7 @@ export const Auth = (props) => {
                 },
             });
             if (res.status === 200) {
-                console.log("refresh-token",res.data)
+                console.log("refresh-token", res.data)
                 setToken(res.data.token);
             }
         } catch (error) {
@@ -58,7 +59,7 @@ export const Auth = (props) => {
                 });
                 if (res.status === 200) {
                     setRedirect(true);
-                    }
+                }
 
             } catch (err) {
                 setToken(null);
@@ -73,9 +74,11 @@ export const Auth = (props) => {
             }
         };
 
-        intervalId = setInterval(checkTokenExpiration, 30000);
+        // intervalId = setInterval(checkTokenExpiration, 3000000);
+        intervalIdRef.current = setInterval(checkTokenExpiration, 3000000);
         return () => {
-            clearInterval(intervalId);
+            // clearInterval(intervalId);
+            clearInterval(intervalIdRef.current);
         };
     }, [userToken]);
 

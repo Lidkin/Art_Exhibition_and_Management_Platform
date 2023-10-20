@@ -17,7 +17,7 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 
-function OpenCall(props) {
+function AddOpencall(props) {
 
     const [openCall, setOpencall] = useState({});
     const [selectedImage, setSelectedImage] = useState(null);
@@ -34,6 +34,7 @@ function OpenCall(props) {
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
+        console.log(file);
         if (file) {
             if (file.size <= 2000000) {
                 setSelectedImage(file);
@@ -56,12 +57,13 @@ function OpenCall(props) {
     const handleClick = async () => {
         try {
             const formData = new FormData();
-            formData.append("file", selectedImage);
+
+            if (selectedImage !== null) formData.append("file", selectedImage);
             for (const key in openCall) {
                 formData.append(key, openCall[key]);
             }
 
-            const res = await axios.post("/api/gallery/addimage", formData, {
+            const res = await axios.patch("/api/opencall/add", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
@@ -72,7 +74,7 @@ function OpenCall(props) {
                 setPreviewImage(null);
                 setSelectedImage(null);
                 setIsEditing(false);
-                navigate("/artist/gallery");
+                navigate("curator/opencall");
             }
         } catch (error) {
             console.error('Error uploading image:', error);
@@ -84,7 +86,7 @@ function OpenCall(props) {
     };
 
     return (
-        <div className="addArt">
+        <div className="addOpencall">
             {isEditing ? (
                 <>
                     <Button
@@ -92,13 +94,14 @@ function OpenCall(props) {
                         startIcon={<AddPhotoAlternateTwoToneIcon />}
                         onClick={handleUploadButtonClick}
                     >
-                        Upload image
+                        Upload poster
                     </Button>
                     <Box
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
                             '& .MuiTextField-root': { width: '25ch' },
+                            alignItems: "center"
                         }}
                     >
                         <VisuallyHiddenInput
@@ -168,14 +171,14 @@ function OpenCall(props) {
                                         margin="normal"
                                     />
                                     <TextField
-                                        label="Max width" 
+                                        label="Max width"
                                         name="maxwidth"
                                         value={openCall.maxwidth}
                                         onChange={handleInputChange}
                                         margin="normal"
                                     />
                                     <TextField
-                                        label="Max height" 
+                                        label="Max height"
                                         name="maxheight"
                                         value={openCall.maxheight}
                                         onChange={handleInputChange}
@@ -194,7 +197,7 @@ function OpenCall(props) {
                     </Button>
                 ) : (
                     <Button variant="contained" color="primary" onClick={handleEditClick}>
-                        Add Open-Call
+                        Add Opencall
                     </Button>
                 )}
             </div>
@@ -202,4 +205,4 @@ function OpenCall(props) {
     );
 }
 
-export default OpenCall;
+export default AddOpencall;

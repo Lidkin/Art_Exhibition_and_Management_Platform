@@ -71,7 +71,7 @@ function AddArt(props) {
                 setPreviewImage(null);
                 setSelectedImage(null);
                 setIsEditing(false);
-                navigate("/artist/gallery");
+                navigate("artist/gallery");
             }
         } catch (error) {
             console.error('Error uploading image:', error);
@@ -98,6 +98,7 @@ function AddArt(props) {
                             display: 'flex',
                             flexDirection: 'column',
                             '& .MuiTextField-root': { width: '25ch' },
+                            alignItems: "center"
                         }}
                     >
                         <VisuallyHiddenInput

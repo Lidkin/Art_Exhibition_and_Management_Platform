@@ -1,11 +1,10 @@
-const { addArtImage, allArtImages } = require('../controllers/gallery.controller.js');
+const { addArtImage, allArtImages, getArtImage, artImagesByOpencall, addArtImageToOpencall } = require('../controllers/gallery.controller.js');
 const { verifyToken } = require('../middlewares/verify.token.js');
 const express = require('express');
 const gRouter = express.Router();
 
 const multer = require('multer');
 const uuid = require('uuid').v4;
-
 
 const storage = multer.memoryStorage({
     destination: (req, file, cb) => { cb(null, '../uploads') },
@@ -17,10 +16,13 @@ const storage = multer.memoryStorage({
 
 const fileFilter = (req, file, cb) => file.mimetype.split("/")[0] === "image" ? cb(null, true) : cb(new Error("file is not a image"), false);
 
-const upload = multer({ storage, fileFilter, limits: { fileSize: 1000000 } }); 
+const upload = multer({ storage, fileFilter, limits: { fileSize: 2000000 } }); 
 
 gRouter.post('/addimage', verifyToken, upload.single("file"), addArtImage);
+gRouter.post('/imageopencall', verifyToken, addArtImageToOpencall);
 gRouter.get('/getimages', verifyToken, allArtImages);
+gRouter.get('/:image_id', verifyToken, getArtImage);
+gRouter.get('/:opencall_id', artImagesByOpencall);
 
 
 module.exports = { gRouter };

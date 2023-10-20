@@ -15,7 +15,6 @@ const LoginRegister = (props) => {
     const [navigateTo, setNavigateTo] = useState(null);
 
     const { setToken } = useContext(AppContext);
-    const { setRole } = useContext(UserContext);
 
     const navigate = useNavigate();
 
@@ -24,10 +23,8 @@ const LoginRegister = (props) => {
     useEffect(() => {
         if (navigateTo === 'artist') {
             navigate("/artist");
-            setRole('artist');
         } else if (navigateTo === 'curator') {
             navigate("/curator");
-            setRole('curator');
         }
     }, [navigateTo]); // Will run when navigateTo changes
 

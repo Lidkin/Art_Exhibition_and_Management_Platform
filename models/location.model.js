@@ -16,10 +16,10 @@ const _allLocations = async (username) => {
 
 const _getLocationByOpencall = async (opencall_id) => {
     try {
-        const location = await db("opencall").where({ id: opencall_id }).returning("location_id");
+        const location_id = await db("opencall").where({ id: opencall_id }).returning("location_id");
 
         return db("location")
-            .where({id:location[0].id})
+            .where({id:location_id[0].id})
             .select("name", "address", "info", "url", "contact")
             .returning(["name", "address", "info", "url", "contact"]);
     } catch (error) {

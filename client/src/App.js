@@ -14,11 +14,10 @@ export const UserContext = createContext(null);
 
 function App() {
   const [userToken, setToken] = useState(null);
-  const [userRole, setRole] = useState(null);
-
+  const [userRole, setUserRole] = useState(null); //used in Profile
   return (
     <AppContext.Provider value={{ userToken, setToken }}>
-      <UserContext.Provider value={{ userRole, setRole }}>
+       <UserContext.Provider value={{ userRole, setUserRole }}> 
         <div className="App">
           <Nav />
           <Routes>
@@ -27,10 +26,10 @@ function App() {
             <Route path="/register" element={<LoginRegister title="Register" />} />
             <Route path="/profile" element={<Auth><Profile title="Profile" /></Auth>} />
             <Route path="/artist/*" element={<Auth><Artist title="Artist" /></Auth>} />
-            <Route path="/curator" element={<Auth><Curator title="Curator" /></Auth>} />
+            <Route path="/curator/*" element={<Auth><Curator title="Curator" /></Auth>} />
           </Routes>
         </div>
-      </UserContext.Provider>
+       </UserContext.Provider> 
     </AppContext.Provider>
   );
 }

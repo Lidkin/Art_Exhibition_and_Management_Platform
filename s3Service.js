@@ -2,7 +2,8 @@ const { Upload } = require("@aws-sdk/lib-storage");
 const { S3 } = require("@aws-sdk/client-s3");
 const uuid = require("uuid").v4;
 
-exports.S3Uploadv3 = async (file) => {
+exports.S3Uploadv3 = async (file, folder) => {
+    console.log("S3 =>", folder);
     const s3 = new S3({
         region: process.env.AWS_REGION,
         credentials: {
@@ -13,7 +14,7 @@ exports.S3Uploadv3 = async (file) => {
 
     const param = {
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `images/${uuid()}-${file.originalname}`,
+        Key: `images/${folder}/${uuid()}-${file.originalname}`,
         Body: file.buffer
     };
 
