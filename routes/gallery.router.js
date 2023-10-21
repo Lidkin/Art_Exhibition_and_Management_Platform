@@ -1,4 +1,4 @@
-const { addArtImage, allArtImages, getArtImage, artImagesByOpencall, addArtImageToOpencall } = require('../controllers/gallery.controller.js');
+const { addArtImage, allArtImages, getArtImage, artImagesByOpencall, addArtImageToOpencall, deleteOpencallImage } = require('../controllers/gallery.controller.js');
 const { verifyToken } = require('../middlewares/verify.token.js');
 const express = require('express');
 const gRouter = express.Router();
@@ -21,8 +21,9 @@ const upload = multer({ storage, fileFilter, limits: { fileSize: 2000000 } });
 gRouter.post('/addimage', verifyToken, upload.single("file"), addArtImage);
 gRouter.post('/imageopencall', verifyToken, addArtImageToOpencall);
 gRouter.get('/getimages', verifyToken, allArtImages);
-// gRouter.get('/image_id', verifyToken, getArtImage);
+gRouter.get('/byid', verifyToken, getArtImage);
 gRouter.get('/byopencall', verifyToken, artImagesByOpencall);
+gRouter.delete('/reject', verifyToken, deleteOpencallImage);
 
 
 module.exports = { gRouter };

@@ -10,16 +10,15 @@ const _allArtImages = async (username) => {
         .returning(["url", "id"]);
 };
 
-// const _getArtImage = async (username, image_id) => {
-    // const opencall = await db("opencall").select
-    // const user_id = userId(username);
-    // return db("image")
-        // .join("size", "image.size_id", "size.id")
-        // .select("image.url", "image.name", "image.creation_year", "image.price", "image.description", "size.width", "size.height")
-        // .where({ user_id, "id": image_id })
-        // .returning(["url", "name", "creation_year", "price", "description", "width", "height"]);
-// };      
-// 
+const _getArtImage = async (image_id) => {
+    const id = image_id.split(",");
+    return db("image")
+        .whereIn("image.id", id)
+        .join("size", "image.size_id", "size.id")
+        .select("image.id", "image.url", "image.name", "image.creation_year", "image.price", "image.description", "size.width", "size.height")
+        .returning(["id", "url", "name", "creation_year", "price", "description", "width", "height"]);
+};
+
 const _addArtImage = async (username, url, artImageInfo) => {
     const user_id = await userId(username);
     const { name, price, description, creation_year, width, height } = artImageInfo;
@@ -40,7 +39,6 @@ const _addArtImageToOpencall = async (opencall_id, image_id) => {
 };
 
 const _artImagesByOpencall = async (opencall_id) => {
-    console.log("opencall_id",opencall_id);
     try {
         let width, height, image_id;
         const sizeAndId = await db("opencall_image")
@@ -48,7 +46,7 @@ const _artImagesByOpencall = async (opencall_id) => {
             .join("opencall", "opencall_image.opencall_id", "opencall.id")
             .select("opencall.max_width", "opencall.max_height", "opencall_image.image_id")
             .returning(["max_width", "max_height", "image_id"]);
-        
+
         width = sizeAndId[0].max_width;
 
         height = sizeAndId[0].max_height;
@@ -62,11 +60,22 @@ const _artImagesByOpencall = async (opencall_id) => {
             .where("size.width", "<", width)
             .where("size.width", "<", height)
             .returning(["url", "id", "name", "creation_year", "price", "description", "width", "height"]);
-    } catch (error) { 
+    } catch (error) {
         console.error(error);
     };
 };
 
-// 
-// module.exports = { _addArtImage, _allArtImages, _getArtImage, _artImagesByOpencall, _addArtImageToOpencall };
-module.exports = { _addArtImage, _allArtImages, _artImagesByOpencall, _addArtImageToOpencall };
+const _deleteOpencallImage = async (opencall_id, image_id) => {
+    try {
+        const id = image_id.split(",");
+        return db("opencall_image")
+            .whereNotIn("image_id", id)
+            .andWhere("opencall_id", opencall_id)
+            .del()
+            .returning(["image_id"]);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+module.exports = { _addArtImage, _allArtImages, _getArtImage, _artImagesByOpencall, _addArtImageToOpencall, _deleteOpencallImage };

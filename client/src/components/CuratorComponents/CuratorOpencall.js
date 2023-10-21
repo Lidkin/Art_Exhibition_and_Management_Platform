@@ -61,7 +61,6 @@ function Opencall(props) {
     };
 
     const handleOpencall = (e) => {
-        console.log(e.target.value);
         const arrOpencall = e.target.value.split(',');
         setOpencallInfo({ name: arrOpencall[0], id:arrOpencall[1]});
         navigate("gallery");

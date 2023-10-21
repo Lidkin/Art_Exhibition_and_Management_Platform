@@ -22,7 +22,6 @@ const allOpencalls = async (req, res) => {
     try {
         const row = await _allOpencalls(req.user.username);
         res.json(row);
-        console.log(row);
     } catch (error) {
         console.log("all opencalls", error);
     };

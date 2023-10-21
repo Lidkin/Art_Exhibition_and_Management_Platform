@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { ImageList, ImageListItem, Box, CircularProgress } from "@mui/material";
+import { ImageList, ImageListItem, Box, CircularProgress, Checkbox, Card, CardContent } from "@mui/material";
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import Favorite from '@mui/icons-material/Favorite';
 import {
     Button,
     Dialog,
@@ -17,12 +19,15 @@ function CuratorGallery(props) {
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
-    const { opencallInfo } = useContext(OpencallContext);
+    const [favoriteImages, setFavoriteImages] = useState([]);
+    const [selected, setSelected] = useState(false);
+    const [rejectedArt, setRejectedArts] = useState([]);
+    const { opencallInfo, setOpencallInfo } = useContext(OpencallContext);
 
     useEffect(() => {
         const getAllArtImages = async () => {
             try {
-                const res = await axios.get(`/api/gallery/byopencall?opencall_id=${opencallInfo.id}`);
+                const res = opencallInfo.imageid ? await axios.get(`/api/gallery/byid?image_id=${opencallInfo.imageid}`) : await axios.get(`/api/gallery/byopencall?opencall_id=${opencallInfo.id}`);
                 if (res.status === 200) {
                     setItemdata(res.data);
                     setLoading(false);
@@ -33,7 +38,8 @@ function CuratorGallery(props) {
             }
         };
         if (opencallInfo.id !== null) getAllArtImages();
-    }, [itemData]);
+
+    }, [itemData, opencallInfo]);
 
     const handleOpen = (imageUrl) => {
         setSelectedImage(imageUrl);
@@ -42,6 +48,28 @@ function CuratorGallery(props) {
 
     const handleClose = () => {
         setOpen(false);
+    };
+
+    const toggleFavorite = (index) => {
+        const updatedSelectedImages = [...favoriteImages];
+        if (updatedSelectedImages.includes(index)) {
+            updatedSelectedImages.splice(updatedSelectedImages.indexOf(index), 1);
+            setSelected(false);
+        } else {
+            updatedSelectedImages.push(index);
+            setSelected(true);
+        }
+        setFavoriteImages(updatedSelectedImages);
+    };
+
+    const handleSelectClick = async () => {
+        const selectedImageIds = favoriteImages.map((index) => itemData[index].id);
+        const updatedOpencallInfo = { ...opencallInfo, imageid: selectedImageIds };
+        await setOpencallInfo(updatedOpencallInfo);
+        const res = await axios.delete(`/api/gallery/reject?opencall_id=${opencallInfo.id}&image_id=${selectedImageIds}`);
+        if (res.status === 200) {
+            console.log(res.data);
+        }
     };
 
     return (itemData === "" ? (
@@ -58,18 +86,27 @@ function CuratorGallery(props) {
                 ) : (
                     <Box sx={{ width: "fit-content", height: "70vh", overflowY: "scroll" }}>
                         <ImageList variant="masonry" cols={5} gap={20} >
-                            {itemData.map((item) => (
-                                <ImageListItem key={item.url} onClick={() => handleOpen(item.url)}>
-                                    <img
-                                        srcSet={`${item.url}?w=200&fit=crop&auto=format&dpr=2 2x`}
-                                        src={`${item.url}?w=200&fit=crop&auto=format`}
-                                        alt={item.name}
-                                        loading="lazy"
-                                    />
-                                </ImageListItem>
+                            {itemData.map((item, index) => (
+                                <Card sx={{ height: "fit-content" }}>
+                                    <CardContent>
+                                        <ImageListItem key={item.url} onClick={() => handleOpen(item.url)}>
+                                            <img
+                                                srcSet={`${item.url}?w=200&fit=crop&auto=format&dpr=2 2x`}
+                                                src={`${item.url}?w=200&fit=crop&auto=format`}
+                                                alt={item.name}
+                                                loading="lazy"
+                                            />
+                                        </ImageListItem>
+                                        <Checkbox
+                                            icon={<FavoriteBorder />}
+                                            checkedIcon={<Favorite />}
+                                            checked={favoriteImages.includes(index)}
+                                            onChange={() => toggleFavorite(index)}
+                                            inputProps={{ 'aria-label': 'controlled' }} />
+                                    </CardContent>
+                                </Card>
                             ))}
                         </ImageList>
-
                         <Dialog
                             maxWidth="lg"
                             open={open}
@@ -92,6 +129,7 @@ function CuratorGallery(props) {
                         </Dialog>
                     </Box>
                 )}
+            {selected && <Button onClick={handleSelectClick}>Select</Button>}
         </>
     )
     );
