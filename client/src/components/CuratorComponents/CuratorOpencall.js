@@ -1,9 +1,11 @@
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ToggleButtonGroup, ToggleButton, Button, Collapse, ListItemText, List, ListItemButton } from "@mui/material";
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import AddOpencall from './AddOpencall';
+import { OpencallContext } from "../Curator";
 
 function Opencall(props) {
     const [opencalls, setOpencalls] = useState([]);
@@ -11,19 +13,15 @@ function Opencall(props) {
     const [artImage, setArt] = useState({});
     const [openItemIndex, setOpenItemIndex] = useState(-1);
     const [alignment, setAlignment] = useState('active');
+    const { opencallInfo, setOpencallInfo } = useContext(OpencallContext);
 
-    const checkGallery = async (id) => {
-        const res = await axios.get(`/api/gallery/${id}`);
-        if (res.status === 200) {
-            setArt(res.data);
-        };
-    };
+    const navigate = useNavigate();
 
     useEffect(() => {
         const opencallsList = async () => {
             let opencallArr = null;
             try {
-                const res = await axios.get('/api/opencall/:active');
+                const res = await axios.get('/api/opencall?status=active');
                 if (res.status === 200) {
                     opencallArr = res.data;
                 };
@@ -37,6 +35,7 @@ function Opencall(props) {
 
 
     const handleListClick = (index) => {
+
         if (openItemIndex === index) {
             setOpenItemIndex(-1);
         } else {
@@ -51,9 +50,8 @@ function Opencall(props) {
     const opencallByStatus = async (e) => {
         try {
             const currentStatus = e.target.textContent;
-            const res = currentStatus === "all" ? await axios.get('/api/opencall/all') : await axios.get(`/api/opencall/:${currentStatus}`);
+            const res = currentStatus === "all" ? await axios.get('/api/opencall/all') : await axios.get(`/api/opencall/?status=${currentStatus}`);
             if (res.status === 200) {
-                console.log(res.data);
                 setOpencalls(res.data);
                 setOpencallStatus(currentStatus);
             };
@@ -62,8 +60,16 @@ function Opencall(props) {
         };
     };
 
+    const handleOpencall = (e) => {
+        console.log(e.target.value);
+        const arrOpencall = e.target.value.split(',');
+        setOpencallInfo({ name: arrOpencall[0], id:arrOpencall[1]});
+        navigate("gallery");
+    };
+
     return (
         <>
+            <AddOpencall />
             <h2>Opencalls</h2>
             <ToggleButtonGroup
                 color="primary"
@@ -79,7 +85,7 @@ function Opencall(props) {
             </ToggleButtonGroup>
 
             {opencalls && (
-                <List sx={{ width: '100%', maxWidth: '80vw', bgcolor: 'background.paper' }}>
+                <List sx={{ width: '100%', maxWidth: '90vw', bgcolor: 'background.paper' }}>
                     {opencalls.map((item, index) => (
                         <div key={index}>
                             <ListItemButton onClick={() => handleListClick(index)}>
@@ -89,8 +95,11 @@ function Opencall(props) {
                             <Collapse in={openItemIndex === index} timeout="auto" unmountOnExit>
                                 <List component="div" disablePadding>
                                     {Object.keys(item).map((key, subIndex) => {
-                                        if (key === 'name') return null; // Skip the 'name' property
-                                        if (key === 'id') return (<Button component={Link} to="curator/gallery" >Gallery</Button>);
+                                        if (key === 'name') {
+                                            return null;
+                                        }; // Skip the 'name' property
+                                        if (key === 'id') {
+                                            return (<Button value={[item["name"],item["id"]]} onClick={(e) => handleOpencall(e)}>Gallery</Button>);                                        }
                                         return (
                                             <ListItemButton sx={{ pl: 4 }} key={subIndex}>
                                                 <ListItemText primary={`${key}: ${item[key]}`} />
@@ -103,8 +112,6 @@ function Opencall(props) {
                     ))}
                 </List>
             )}
-
-            <Button onClick={checkGallery}></Button>
         </>
     );
 };

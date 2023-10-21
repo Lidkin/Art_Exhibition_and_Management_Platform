@@ -16,13 +16,13 @@ const storage = multer.memoryStorage({
 
 const fileFilter = (req, file, cb) => file.mimetype.split("/")[0] === "image" ? cb(null, true) : cb(new Error("file is not a image"), false);
 
-const upload = multer({ storage, fileFilter, limits: { fileSize: 2000000 } }); 
+const upload = multer({ storage, fileFilter, limits: { fileSize: 2000000 } });
 
 gRouter.post('/addimage', verifyToken, upload.single("file"), addArtImage);
 gRouter.post('/imageopencall', verifyToken, addArtImageToOpencall);
 gRouter.get('/getimages', verifyToken, allArtImages);
-gRouter.get('/:image_id', verifyToken, getArtImage);
-gRouter.get('/:opencall_id', artImagesByOpencall);
+// gRouter.get('/image_id', verifyToken, getArtImage);
+gRouter.get('/byopencall', verifyToken, artImagesByOpencall);
 
 
 module.exports = { gRouter };

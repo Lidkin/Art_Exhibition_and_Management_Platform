@@ -22,20 +22,20 @@ const allArtImages = async (req, res) => {
     };
 };
 
-const getArtImage = async (req, res) => {
-    try {
-        const image_id = req.params.image_id;
-        const username = req.user.username;
-        const row = await _getArtImage(username, image_id);
-        res.json(row);
-    } catch (error) {
-        console.log(error);
-    };
-};
+// const getArtImage = async (req, res) => {
+    // try {
+        // const image_id = req.params.image_id;
+        // const username = req.user.username;
+        // const row = await _getArtImage(username, image_id);
+        // res.json(row);
+    // } catch (error) {
+        // console.log(error);
+    // };
+// };
 
 const artImagesByOpencall = async (req, res) => {
     try {
-        const opencall_id = req.params.opencall_id;
+        const opencall_id = req.query.opencall_id;
         const row = await _artImagesByOpencall(opencall_id);
         res.json(row);
     } catch (error) {
@@ -53,5 +53,6 @@ const addArtImageToOpencall = async (req, res) => {
         console.log(error);
     };
 };
-
-module.exports = { addArtImage, allArtImages, getArtImage, artImagesByOpencall, addArtImageToOpencall };
+// 
+// module.exports = { addArtImage, allArtImages, getArtImage, artImagesByOpencall, addArtImageToOpencall };
+module.exports = { addArtImage, allArtImages, artImagesByOpencall, addArtImageToOpencall };

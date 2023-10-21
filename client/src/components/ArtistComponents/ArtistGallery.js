@@ -6,8 +6,7 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
-    IconButton,
+    DialogTitle
 } from "@mui/material";
 import React from 'react';
 
