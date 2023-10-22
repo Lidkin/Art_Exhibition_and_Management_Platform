@@ -21,6 +21,6 @@ const upload = multer({ storage, fileFilter, limits: { fileSize: 1000000 } });
 // oRouter.get('/opencall_id', getOpencall);
 oRouter.get('/all', verifyToken, allOpencalls);
 oRouter.patch('/add', verifyToken, upload.single("file"), addOpencall);
-oRouter.get('/', verifyToken, opencallByStatus);
+oRouter.get('/status', verifyToken, opencallByStatus);
 
 module.exports = { oRouter };

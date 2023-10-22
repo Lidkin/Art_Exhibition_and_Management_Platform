@@ -1,4 +1,4 @@
-const { _addArtImage, _allArtImages, _getArtImage, _artImagesByOpencall, _addArtImageToOpencall, _deleteOpencallImage } = require('../models/gallery.model.js');
+const { _addArtImage, _allArtImages, _getArtImage, _artImagesByOpencall, _addArtImageToOpencall, _deleteOpencallImage, _changeImageStatus } = require('../models/gallery.model.js');
 const { S3Uploadv3 } = require('../s3Service.js');
 
 const addArtImage = async (req, res) => {
@@ -65,4 +65,14 @@ const deleteOpencallImage = async (req, res) => {
     }
 };
 
-module.exports = { addArtImage, allArtImages, getArtImage, artImagesByOpencall, addArtImageToOpencall, deleteOpencallImage };
+const changeImageStatus = async (req, res) => {
+    try {
+        const { status, ids } = req.body;
+        const data = await _changeImageStatus(status, ids);
+        res.json(data);
+    } catch (error) {
+        console.log(error);
+    }
+ };
+
+module.exports = { addArtImage, allArtImages, getArtImage, artImagesByOpencall, addArtImageToOpencall, deleteOpencallImage, changeImageStatus };

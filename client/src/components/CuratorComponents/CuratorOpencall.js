@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useContext } from 'react';
 import { ToggleButtonGroup, ToggleButton, Button, Collapse, ListItemText, List, ListItemButton } from "@mui/material";
 import ExpandLess from '@mui/icons-material/ExpandLess';
@@ -10,10 +10,9 @@ import { OpencallContext } from "../Curator";
 function Opencall(props) {
     const [opencalls, setOpencalls] = useState([]);
     const [opencallStatus, setOpencallStatus] = useState("active");
-    const [artImage, setArt] = useState({});
     const [openItemIndex, setOpenItemIndex] = useState(-1);
     const [alignment, setAlignment] = useState('active');
-    const { opencallInfo, setOpencallInfo } = useContext(OpencallContext);
+    const { setOpencallInfo } = useContext(OpencallContext);
 
     const navigate = useNavigate();
 
@@ -50,7 +49,7 @@ function Opencall(props) {
     const opencallByStatus = async (e) => {
         try {
             const currentStatus = e.target.textContent;
-            const res = currentStatus === "all" ? await axios.get('/api/opencall/all') : await axios.get(`/api/opencall/?status=${currentStatus}`);
+            const res = currentStatus === "all" ? await axios.get('/api/opencall/all') : await axios.get(`/api/opencall/status?status=${currentStatus}`);
             if (res.status === 200) {
                 setOpencalls(res.data);
                 setOpencallStatus(currentStatus);

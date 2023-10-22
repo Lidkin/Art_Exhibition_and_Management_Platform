@@ -1,4 +1,4 @@
-const { addArtImage, allArtImages, getArtImage, artImagesByOpencall, addArtImageToOpencall, deleteOpencallImage } = require('../controllers/gallery.controller.js');
+const { addArtImage, allArtImages, getArtImage, artImagesByOpencall, addArtImageToOpencall, deleteOpencallImage, changeImageStatus } = require('../controllers/gallery.controller.js');
 const { verifyToken } = require('../middlewares/verify.token.js');
 const express = require('express');
 const gRouter = express.Router();
@@ -24,6 +24,6 @@ gRouter.get('/getimages', verifyToken, allArtImages);
 gRouter.get('/byid', verifyToken, getArtImage);
 gRouter.get('/byopencall', verifyToken, artImagesByOpencall);
 gRouter.delete('/reject', verifyToken, deleteOpencallImage);
-
+gRouter.patch('/status', verifyToken, changeImageStatus);
 
 module.exports = { gRouter };

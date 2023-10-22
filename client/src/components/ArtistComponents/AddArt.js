@@ -172,7 +172,7 @@ function AddArt(props) {
                         Save
                     </Button>
                 ) : (
-                    <Button variant="contained" color="primary" onClick={handleEditClick}>
+                    <Button sx={{ m: "2%" }} variant="contained" color="primary" onClick={handleEditClick}>
                         Add Art
                     </Button>
                 )}

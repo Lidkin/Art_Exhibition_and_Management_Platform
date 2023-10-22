@@ -20,8 +20,7 @@ function CuratorGallery(props) {
     const [open, setOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [favoriteImages, setFavoriteImages] = useState([]);
-    const [selected, setSelected] = useState(false);
-    const [rejectedArt, setRejectedArts] = useState([]);
+    const [rejectedArt, setRejectedArts] = useState(null);
     const { opencallInfo, setOpencallInfo } = useContext(OpencallContext);
 
     useEffect(() => {
@@ -41,6 +40,19 @@ function CuratorGallery(props) {
 
     }, [itemData, opencallInfo]);
 
+    useEffect(() => {
+        const changeImageStatus = async () => {
+            try {
+                const res = await axios.patch();
+                if (res.status === 200) {
+                }
+            } catch (error) {
+                console.log(error);
+            };
+        };
+        if (rejectedArt !== null) changeImageStatus();
+    }, [rejectedArt]);
+
     const handleOpen = (imageUrl) => {
         setSelectedImage(imageUrl);
         setOpen(true);
@@ -54,10 +66,8 @@ function CuratorGallery(props) {
         const updatedSelectedImages = [...favoriteImages];
         if (updatedSelectedImages.includes(index)) {
             updatedSelectedImages.splice(updatedSelectedImages.indexOf(index), 1);
-            setSelected(false);
         } else {
             updatedSelectedImages.push(index);
-            setSelected(true);
         }
         setFavoriteImages(updatedSelectedImages);
     };
@@ -68,7 +78,7 @@ function CuratorGallery(props) {
         await setOpencallInfo(updatedOpencallInfo);
         const res = await axios.delete(`/api/gallery/reject?opencall_id=${opencallInfo.id}&image_id=${selectedImageIds}`);
         if (res.status === 200) {
-            console.log(res.data);
+            setRejectedArts(res.data);
         }
     };
 
@@ -129,7 +139,7 @@ function CuratorGallery(props) {
                         </Dialog>
                     </Box>
                 )}
-            {selected && <Button onClick={handleSelectClick}>Select</Button>}
+            <Button onClick={handleSelectClick}>Choose Favorite</Button>
         </>
     )
     );

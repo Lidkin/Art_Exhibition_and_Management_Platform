@@ -14,7 +14,6 @@ function Curator(props) {
                 <Routes>
                     <Route path="opencall" element={<Opencall title="Opencall" />} />
                     <Route path="opencall/gallery" element={<CuratorGallery title="Gallery" />} />
-                    {/* <Route path="opencall/gallery/accepted" element={<CuratorGallery title="Accepted Works" />} /> */}
                 </Routes>
             </div>
         </OpencallContext.Provider>

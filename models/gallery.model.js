@@ -7,6 +7,7 @@ const _allArtImages = async (username) => {
         .where({ user_id })
         .join("size", "image.size_id", "size.id")
         .select("image.id", "image.url", "image.name", "image.creation_year", "image.price", "image.description", "size.width", "size.height")
+        .orderBy("id")
         .returning(["url", "id"]);
 };
 
@@ -78,4 +79,14 @@ const _deleteOpencallImage = async (opencall_id, image_id) => {
     }
 };
 
-module.exports = { _addArtImage, _allArtImages, _getArtImage, _artImagesByOpencall, _addArtImageToOpencall, _deleteOpencallImage };
+const _changeImageStatus = async (status, ids) => { 
+    try {
+        return db("image")
+            .whereIn("id", ids)
+            .update({ status: status });
+    } catch (error) {
+        console.log(error);
+    };
+};
+
+module.exports = { _addArtImage, _allArtImages, _getArtImage, _artImagesByOpencall, _addArtImageToOpencall, _deleteOpencallImage, _changeImageStatus };

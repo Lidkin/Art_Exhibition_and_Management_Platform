@@ -1,14 +1,8 @@
+
 .App {
   text-align: center;
 }
 
 .imageItem{
   box-shadow: 6px 6px 2px 1px rgba(0, 0, 255, .2);
-}
-
-.imageBox {
-  border: 1px red solid; 
-  display: block;
-  flex-direction: column;
-  justify-content: center;
 }
