@@ -1,4 +1,4 @@
-const { addOpencall, allOpencalls, getOpencall, opencallByStatus } = require('../controllers/opencall.controller.js');
+const { addOpencall, allOpencalls, opencallByImageId, opencallByStatus, getOpencall } = require('../controllers/opencall.controller.js');
 const { verifyToken } = require('../middlewares/verify.token.js');
 const express = require('express');
 const oRouter = express.Router();
@@ -22,5 +22,7 @@ const upload = multer({ storage, fileFilter, limits: { fileSize: 1000000 } });
 oRouter.get('/all', verifyToken, allOpencalls);
 oRouter.patch('/add', verifyToken, upload.single("file"), addOpencall);
 oRouter.get('/status', verifyToken, opencallByStatus);
+oRouter.get('/byimage', opencallByImageId);
+oRouter.get('/byid', getOpencall);
 
 module.exports = { oRouter };

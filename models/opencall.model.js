@@ -14,18 +14,6 @@ const _allOpencalls = async (username) => {
     };
 };
 
-// const _getOpencall = async (id) => {
-// try {
-// return db("opencall")
-// .where({ id: id })
-// .select("name", "description", "date", "deadline", "maxnumber", "status", "fee", "max_width", "max_height")
-// .returning(["location_id"]);
-// 
-// } catch (error) {
-// console.log("get opencall model", error);
-// };
-// };
-
 const _addOpencall = async (opencall, username) => {
     try {
         const user_id = await userId(username);
@@ -56,6 +44,28 @@ const _opencallByStatus = async (status, username) => {
     };
 };
 
+const _opencallByImageId = async (image_id) => {
+    try {
+        const rows = await db("opencall_image")
+            .where("image_id", image_id)
+            .select("opencall_id");
+        const ids = rows.map(row => row.opencall_id);        
+        return db("opencall")
+            .whereIn("id", ids)
+            .select("name", "description", "date", "deadline", "maxnumber", "fee");
+    } catch (error) {
+        console.log(error);
+    };
+};
 
-//module.exports = { _addOpencall, _allOpencalls, _getOpencall, _opencallByStatus };
-module.exports = { _addOpencall, _allOpencalls, _opencallByStatus };
+const _getOpencall = async (id) => { 
+    try {
+        return db("opencall")
+            .where("id", id)
+            .select("name", "description", "date", "deadline", "maxnumber", "fee");
+    } catch (error) {
+        console.log(error);
+    };
+};
+
+module.exports = { _addOpencall, _allOpencalls, _opencallByStatus, _opencallByImageId, _getOpencall };

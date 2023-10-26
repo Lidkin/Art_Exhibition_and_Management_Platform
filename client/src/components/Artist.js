@@ -6,7 +6,7 @@ import ChooseOpencall from './ArtistComponents/ChooseOpencall';
 
 export const ActiveOpencallContext = createContext(null);
 function Artist(props) {
-    const [opencallContext, setOpencallContext] = useState([{}]);
+    const [opencallContext, setOpencallContext] = useState({});
     return (
         <ActiveOpencallContext.Provider value={{ opencallContext, setOpencallContext }}>
             <div className='artist'>

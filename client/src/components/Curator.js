@@ -7,7 +7,7 @@ import CuratorGallery from './CuratorComponents/CuratorGallery';
 export const OpencallContext = createContext(null);
 
 function Curator(props) {
-    const [opencallInfo, setOpencallInfo] = useState({ });
+    const [opencallInfo, setOpencallInfo] = useState(null);
     return (
         <OpencallContext.Provider value={{ opencallInfo, setOpencallInfo }}>
             <div className='curator'>

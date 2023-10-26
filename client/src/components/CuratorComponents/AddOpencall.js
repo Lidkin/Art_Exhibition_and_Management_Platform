@@ -172,15 +172,15 @@ function AddOpencall(props) {
                                     />
                                     <TextField
                                         label="Max width"
-                                        name="maxwidth"
-                                        value={openCall.maxwidth}
+                                        name="max_width"
+                                        value={openCall.max_width}
                                         onChange={handleInputChange}
                                         margin="normal"
                                     />
                                     <TextField
                                         label="Max height"
-                                        name="maxheight"
-                                        value={openCall.maxheight}
+                                        name="max_height"
+                                        value={openCall.max_height}
                                         onChange={handleInputChange}
                                         margin="normal"
                                     />

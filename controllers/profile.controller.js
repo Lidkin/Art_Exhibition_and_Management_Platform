@@ -14,6 +14,7 @@ const getUser = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const user = req.body;
+        console.log(user);
         const name = req.user.username;
         const row = await _updateUser(user, name);
         res.json(row);

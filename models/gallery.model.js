@@ -6,7 +6,7 @@ const _allArtImages = async (username) => {
     return db("image")
         .where({ user_id })
         .join("size", "image.size_id", "size.id")
-        .select("image.id", "image.url", "image.name", "image.creation_year", "image.price", "image.description", "size.width", "size.height")
+        .select("image.id", "image.status", "image.url", "image.name", "image.creation_year", "image.price", "image.description", "size.width", "size.height")
         .orderBy("id")
         .returning(["url", "id"]);
 };
@@ -59,7 +59,7 @@ const _artImagesByOpencall = async (opencall_id) => {
             .join("size", "image.size_id", "size.id")
             .select("image.id", "image.url", "image.name", "image.creation_year", "image.price", "image.description", "size.width", "size.height")
             .where("size.width", "<", width)
-            .where("size.width", "<", height)
+            .where("size.height", "<", height)
             .returning(["url", "id", "name", "creation_year", "price", "description", "width", "height"]);
     } catch (error) {
         console.error(error);
@@ -89,4 +89,30 @@ const _changeImageStatus = async (status, ids) => {
     };
 };
 
-module.exports = { _addArtImage, _allArtImages, _getArtImage, _artImagesByOpencall, _addArtImageToOpencall, _deleteOpencallImage, _changeImageStatus };
+const _updateArtInfo = async (id, artInfo) => { 
+    try {
+        const extractedProperties = {};
+        for (const key in artInfo) {
+            if (Object.hasOwnProperty.call(artInfo, key)) {
+                if (key === "id" || key === "width" || key === "height") continue;
+                extractedProperties[key] = artInfo[key];
+            }
+        };
+        let size_id = await db("size")
+            .select("id")
+            .where({ "width": artInfo.width, "height":artInfo.height });
+
+        if (size_id.length === 0) size_id = await db("size").insert({ "width": artInfo.width, "height": artInfo.height }).returning(["id"]);
+        extractedProperties["size_id"] = size_id[0].id;
+        console.log("extractedProperties", extractedProperties);
+
+        return db("image")
+            .where("id", id)
+            .join("size", "image.size_id", "size.id")
+            .update(extractedProperties);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+module.exports = { _addArtImage, _allArtImages, _getArtImage, _artImagesByOpencall, _addArtImageToOpencall, _deleteOpencallImage, _changeImageStatus, _updateArtInfo };

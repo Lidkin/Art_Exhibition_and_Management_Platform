@@ -19,10 +19,10 @@ const VisuallyHiddenInput = styled('input')({
 
 function AddArt(props) {
     const [artImage, setArtimage] = useState({});
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [previewImage, setPreviewImage] = useState(null);
+    const [selectedImage, setSelectedImage] = useState('');
+    const [previewImage, setPreviewImage] = useState('');
     const [isEditing, setIsEditing] = useState(false);
-    const fileInputRef = useRef(null);
+    const fileInputRef = useRef('');
 
     const navigate = useNavigate();
 

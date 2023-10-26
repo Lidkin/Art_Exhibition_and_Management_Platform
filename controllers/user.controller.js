@@ -4,11 +4,13 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const register = async (req, res) => {
+    console.log("register in user.controler" );
     try {
         const { firstname, lastname, email, role, info, username, password } = req.body;
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(password + "", salt);
         const row = await _register(firstname, lastname, email, role, info, username.toLowerCase(), hash);
+        console.log("register in user.controler:",row);
         res.json(row);
     } catch (err) {
         if (err.message.includes('null value in column "id"')) {

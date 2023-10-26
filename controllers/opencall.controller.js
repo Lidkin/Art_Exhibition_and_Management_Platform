@@ -1,10 +1,11 @@
-const { _addOpencall, _allOpencalls, _getOpencall, _opencallByStatus } = require('../models/opencall.model.js');
+const { _addOpencall, _allOpencalls, _opencallByImageId, _opencallByStatus, _getOpencall } = require('../models/opencall.model.js');
 const { S3Uploadv3 } = require('../s3Service.js');
 
 const addOpencall = async (req, res) => {
     let opencallInfo;
     try {
         const username = req.user.username;
+        console.log(req.body);
         if (req.file !== null) {
             const imageUrl = await S3Uploadv3(req.file, "posters");
             opencallInfo = { ...req.body, url: imageUrl.Location };
@@ -27,16 +28,15 @@ const allOpencalls = async (req, res) => {
     };
 };
 
-// const getOpencall = async (req, res) => {
-// try {
-// const opencall_id = req.params.opencall_id;
-// const row = await _getOpencall(opencall_id);
-// res.json(row);
-// } catch (error) {
-// console.log("get opencall", error);
-// };
-// };
-
+const opencallByImageId = async (req, res) => { 
+    try {
+        const image_id = req.query.id;
+        const rows = await _opencallByImageId(image_id);
+        res.json(rows);
+    } catch (error) {
+        console.log(error);
+    }
+}
 const opencallByStatus = async (req, res) => {
     try {
         const username = req.user.username;
@@ -48,5 +48,14 @@ const opencallByStatus = async (req, res) => {
     };
 };
 
-//module.exports = { addOpencall, allOpencalls, getOpencall, opencallByStatus };
-module.exports = { addOpencall, allOpencalls, opencallByStatus };
+const getOpencall = async (req, res) => {
+try {
+    const id = req.query.id;
+    const row = await _getOpencall(id);
+    res.json(row);
+} catch (error) {
+    console.log(error);
+}
+};
+
+module.exports = { addOpencall, allOpencalls, opencallByStatus, opencallByImageId, getOpencall };

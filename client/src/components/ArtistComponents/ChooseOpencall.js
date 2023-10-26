@@ -5,7 +5,7 @@ import { ActiveOpencallContext } from "../Artist";
 
 function ChooseOpencall(props) {
     const [activeOpencall, setOpencall] = useState([]);
-    const [activeOpencalls, setOpencalls] = useState([]);
+    const [listActiveOpencalls, setListOpencalls] = useState('');
     const { opencallContext, setOpencallContext } = useContext(ActiveOpencallContext);
     const [isFocused, setIsFocused] = useState(false);
 
@@ -13,10 +13,11 @@ function ChooseOpencall(props) {
         const getActiveOpencalls = async () => {
             try {
                 const res = await axios.get("/api/opencall/status?status=active");
+                console.log("active opencalls",res.data);
                 if (res.status === 200) {
                     const arrOpencalls = res.data.map((item) => { return { name: item.name, id: item.id } });
           
-                    setOpencalls(arrOpencalls);
+                    setListOpencalls(arrOpencalls);
                 };
             } catch (error) {
                 console.log(error);
@@ -29,12 +30,13 @@ function ChooseOpencall(props) {
     const handleChangeMultiple = (event) => {
         const { options } = event.target;
         const value = [];
-        const contextOpencall = [];
+        let contextOpencall;
         for (let i = 0, l = options.length; i < l; i += 1) {
             if (options[i].selected) {
-                const opencall = activeOpencalls.find((item) => item.id == options[i].value)
+                const opencall = listActiveOpencalls.find((item) => item.id == options[i].value)
                 value.push(options[i].value);
-                contextOpencall.push(opencall);
+                console.log(" from list opebcalls",opencall);
+                contextOpencall = {...opencallContext, ...opencall};
             }
         }
 
@@ -42,29 +44,32 @@ function ChooseOpencall(props) {
         setOpencallContext(contextOpencall);
     };
 
-    // const handleCheckboxFocus = () => {
-        // const updOpencallContext = opencallContext;
-        // updOpencallContext["focused"] = true;
-        // setIsFocused(true);
-        // setOpencallContext(updOpencallContext);
-    // };
+    const handleCheckboxFocus = () => {
+        const updOpencallContext = opencallContext;
+        updOpencallContext["focused"] = true;
+        setIsFocused(true);
+        setOpencallContext(updOpencallContext);
+    };
 
-    // const handleBlur = () => {
-        // const updOpencallContext = opencallContext;
-        // updOpencallContext["focused"] = false;
-        // setIsFocused(false);
-        // setOpencallContext(updOpencallContext);
-    // };
+    const handleBlur = () => {
+        const updOpencallContext = opencallContext;
+        updOpencallContext["focused"] = false;
+        setIsFocused(false);
+        setOpencallContext(updOpencallContext);
+    };
 
 
     return (
-        <Box sx={{
+        <>
+            { console.log("context", opencallContext)}
+            {listActiveOpencalls !== '' ?
+        (<Box sx={{
             display: 'flex',
             flexDirection: 'column',
             '& .MuiTextField-root': { width: '50ch' },
             alignItems: "center"
         }}>
-            <FormControl sx={{ m: 1, minWidth: "fit-content", maxWidth: "fit-content", maxHeight: "fit-content(50%)" }}>
+            <FormControl sx={{ m: 1, minWidth: "15%", maxWidth: "fit-content", maxHeight: "fit-content(50%)" }}>
                 <InputLabel shrink htmlFor="select-multiple-native">
                     Active Opencalls
                 </InputLabel>
@@ -77,18 +82,18 @@ function ChooseOpencall(props) {
                     inputProps={{
                         id: 'select-multiple-native',
                     }}
-                    // onFocus={handleCheckboxFocus}
-                    // onBlur={handleBlur}
+                    onFocus={handleCheckboxFocus}
+                    onBlur={handleBlur}
                 >
-                    {activeOpencalls.map((opencall) => (
+                    {listActiveOpencalls.map((opencall) => (
                         <option key={opencall.name} value={opencall.id}>
                             {opencall.name}
                         </option>
                     ))}
                 </Select>
             </FormControl>
-            {console.log(opencallContext)}
-        </Box>
+                </Box>) : null}
+        </>
 
     );
 };

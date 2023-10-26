@@ -1,6 +1,13 @@
-import { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { ImageList, ImageListItem, Box, CircularProgress, Checkbox, Card, CardContent, FormControlLabel } from "@mui/material";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {
+    Container, ImageListItem,
+    Box, CircularProgress,
+    Checkbox, Card,
+    CardContent, FormControlLabel,
+    CardHeader, Grid, ListItem, List, ListItemText
+} from "@mui/material";
 import {
     Button,
     Dialog,
@@ -8,21 +15,56 @@ import {
     DialogContent,
     DialogTitle
 } from "@mui/material";
-import React from 'react';
 import { ActiveOpencallContext } from "../Artist";
+import ChangeArtInfo from "./ChangeArtInfo";
+import OpencallInfo from "./OpencallInfo";
+
+const theme = createTheme({
+    components: {
+        MuiCard: {
+            styleOverrides: {
+                root: {
+                    border: '2px solid rgba(0, 0, 100, 0.25)',
+                    borderRadius: '5px',
+                    margin: "5px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center"
+                }
+            },
+        },
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    padding: '1px'
+                }
+            },
+        },
+    },
+});
 
 function ArtistGallery(props) {
-    const [itemData, setItemdata] = useState(null);
+    const [itemData, setItemdata] = useState('');
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedImage, setSelectedImage] = useState('');
     const [forSubmitImages, setSubmitImages] = useState([]);
     const { opencallContext, setOpencallContext } = useContext(ActiveOpencallContext);
+    const [selectedCard, setSelectedCard] = useState('');
     const [approvedArt, setApprovedArts] = useState(null);
     const [buttonClicked, setButtonClicked] = useState(false);
 
+
+    const handleCardHover = (index) => {
+        setSelectedCard(index);
+    };
+
+    const handleCardLeave = () => {
+        setSelectedCard('');
+    };
+
     useEffect(() => {
-        const getAllArtImages = async () => {
+       const getAllArtImages = async () => {
             try {
                 const res = await axios.get("/api/gallery/getimages");
                 if (res.status === 200) {
@@ -35,7 +77,7 @@ function ArtistGallery(props) {
             };
         };
         getAllArtImages();
-    }, [itemData]);
+    }, [itemData]); //itemData
 
     const handleOpen = (imageUrl) => {
         setSelectedImage(imageUrl);
@@ -73,9 +115,8 @@ function ArtistGallery(props) {
     };
 
     const addImage = async (id) => {
-        console.log("id from context", opencallContext[0].id);
-        const res = await axios.post("/api/gallery/imageopencall", {
-            opencall_id: opencallContext[0].id,
+        const res = await axios.post("/api/gallery/addimageopencall", {
+            opencall_id: opencallContext.id,
             image_id: id
         });
         if (res.status === 200) {
@@ -87,43 +128,63 @@ function ArtistGallery(props) {
         return buttonClicked && forSubmitImages.includes(index);
     };
 
-   return (
+    return (
         <>
             {loading ? (
                 <CircularProgress />
             ) : (
                 <>
-                       {opencallContext[0] && <Button onClick={handleSelectClick}>Send art to Opencall {opencallContext[0].name} {opencallContext[0].focused}</Button>}
-                    <Box sx={{ width: "fit-content", height: "70vh", overflowY: "scroll" }}>
-                        <ImageList variant="masonry" cols={5} gap={20} >
+                    {opencallContext.name && <Button onClick={handleSelectClick}>Send art to Opencall {opencallContext.name}</Button>}
+                    <Box className="gallery" sx={{ width: "100%", height: "65vh", overflowY: "scroll", boxShadow: '5px 0px 5px rgba(0, 10, 50, 0.5)', p: 2 }}>
+                        <Grid container columnSpacing={{ xs: 1, sm: 2, md: 3, lg: 4 }} rowSpacing={2}>
                             {itemData.map((item, index) => (
-                                <Card sx={{ height: "fit-content" }}>
-                                    <CardContent>
-                                        <ImageListItem key={item.url} onClick={() => handleOpen(item.url)}>
-                                            <img
-                                                srcSet={`${item.url}?w=200&fit=crop&auto=format&dpr=2 2x`}
-                                                src={`${item.url}?w=200&fit=crop&auto=format`}
-                                                alt={item.name}
-                                                loading="lazy"
-                                            />
-                                        </ImageListItem>
-                                        {opencallContext[0] &&
-                                            <FormControlLabel control={<Checkbox
-                                                checked={forSubmitImages.includes(index)}
-                                                onChange={() => toggleSubmit(index)}
-                                                disabled={isImageSubmitted(index) ? true : false}
-                                                inputProps={{ 'aria-label': 'controlled' }}
-                                            />}
-                                                label={buttonClicked && isImageSubmitted(index) ? opencallContext[0].name : ""}
-                                                labelPlacement="bottom"
-                                            />}
-                                    </CardContent>
-                                </Card>
+                                <Grid item xs={12} sm={6} md={4} lg={3}>
+                                    <ThemeProvider theme={theme}>
+                                        <Card key={item.id}
+                                            sx={{ height: "100%", width: "100%" }}
+                                            onMouseEnter={() => handleCardHover(index)}
+                                            onMouseLeave={() => handleCardLeave()}>
+                                            {selectedCard !== index ? <CardHeader title={item.name} /> : <ChangeArtInfo value={{ item, selected: selectedCard === index }} />}
+
+                                            <Container sx={{ width: "100%", height: "250px" }} key={item.url} onClick={() => handleOpen(item.url)}>
+                                                <img
+                                                    width="100%"
+                                                    height="250px"
+                                                    style={{
+                                                        objectFit: "contain" // "contain" or "cover" 
+                                                    }}
+                                                    srcSet={`${item.url}??w=250&h=250&fit=crop&auto=format&dpr=2 2x`}
+                                                    src={`${item.url}?w=250&h=250&fit=crop&auto=format`}
+                                                    alt={item.name}
+                                                    loading="lazy"
+                                                />
+                                            </Container>
+                                            <CardContent key={item.id}>
+                                                {item.status === null && opencallContext.name &&
+                                                    <FormControlLabel
+                                                        key={item.id}
+                                                        control={<Checkbox
+                                                            checked={forSubmitImages.includes(index)}
+                                                            onChange={() => toggleSubmit(index)}
+                                                            disabled={isImageSubmitted(index) ? true : false}
+                                                            inputProps={{ 'aria-label': 'controlled' }}
+                                                        />}
+                                                        label={buttonClicked && isImageSubmitted(index) ? opencallContext.name : ""}
+                                                        labelPlacement="bottom"
+                                                    />}
+                                            </CardContent>
+                                            <CardContent>
+                                                {item.status === "submitted" && (selectedCard !== index ? <p>Submitted</p> : <OpencallInfo value={{ item, selected: selectedCard === index }} />)}
+                                            </CardContent>
+                                        </Card>
+                                    </ThemeProvider>
+                                </Grid>
                             ))}
-                        </ImageList>
+                        </Grid>
 
                         <Dialog
                             maxWidth="lg"
+                            minWidth="sx"
                             open={open}
                             onClose={handleClose}>
                             <DialogTitle>Zoomed Image</DialogTitle>
@@ -132,7 +193,7 @@ function ArtistGallery(props) {
                                     <img
                                         src={selectedImage}
                                         alt="Zoomed Image"
-                                        style={{ maxWidth: "fit-content", height: "80vh" }}
+                                        style={{ maxWidth: "100%", maxHight: "100%" }}
                                     />
                                 )}
                             </DialogContent>
@@ -142,6 +203,7 @@ function ArtistGallery(props) {
                                 </Button>
                             </DialogActions>
                         </Dialog>
+
                     </Box>
                 </>
             )}

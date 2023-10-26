@@ -1,6 +1,7 @@
 const { db } = require('../config/db.js');
 
 const _register = async (firstname, lastname, email, role, info, username, password) => { 
+    console.log("register in user.model");
     try {
         const userInsert = await db("users")
             .insert({ firstname, lastname, email, role, info })

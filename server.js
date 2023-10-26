@@ -29,4 +29,4 @@ app.use('/api/gallery', gRouter);
 app.use('/api/location', lRouter);
 app.use('/api/opencall', oRouter);
 
-app.listen(process.env.PORT);
+app.listen(process.env.PORT, console.log("port 3001"));
