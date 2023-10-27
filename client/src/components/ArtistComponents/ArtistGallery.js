@@ -18,6 +18,7 @@ import {
 import { ActiveOpencallContext } from "../Artist";
 import ChangeArtInfo from "./ChangeArtInfo";
 import OpencallInfo from "./OpencallInfo";
+import './Artist.style.css';
 
 const theme = createTheme({
     components: {
@@ -77,7 +78,7 @@ function ArtistGallery(props) {
             };
         };
         getAllArtImages();
-    }, [itemData]); //itemData
+    }, [itemData]);
 
     const handleOpen = (imageUrl) => {
         setSelectedImage(imageUrl);
@@ -133,9 +134,9 @@ function ArtistGallery(props) {
             {loading ? (
                 <CircularProgress />
             ) : (
-                <>
+                    <div id="arts-container">
                     {opencallContext.name && <Button onClick={handleSelectClick}>Send art to Opencall {opencallContext.name}</Button>}
-                    <Box className="gallery" sx={{ width: "100%", height: "65vh", overflowY: "scroll", boxShadow: '5px 0px 5px rgba(0, 10, 50, 0.5)', p: 2 }}>
+                        <Container fixed >
                         <Grid container columnSpacing={{ xs: 1, sm: 2, md: 3, lg: 4 }} rowSpacing={2}>
                             {itemData.map((item, index) => (
                                 <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -204,8 +205,8 @@ function ArtistGallery(props) {
                             </DialogActions>
                         </Dialog>
 
-                    </Box>
-                </>
+                    </Container>
+                </div>
             )}
         </>
     );

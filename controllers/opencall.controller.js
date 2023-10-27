@@ -42,6 +42,7 @@ const opencallByStatus = async (req, res) => {
         const username = req.user.username;
         const status = req.query.status;
         const row = await _opencallByStatus(status, username);
+        console.log(status)
         res.json(row);
     } catch (error) {
         console.log("opencalls by status", error);
@@ -49,9 +50,10 @@ const opencallByStatus = async (req, res) => {
 };
 
 const getOpencall = async (req, res) => {
-try {
+    try {
+    const username = req.user.username;
     const id = req.query.id;
-    const row = await _getOpencall(id);
+    const row = await _getOpencall(id, username);
     res.json(row);
 } catch (error) {
     console.log(error);

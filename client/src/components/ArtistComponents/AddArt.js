@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AddPhotoAlternateTwoToneIcon from '@mui/icons-material/AddPhotoAlternateTwoTone';
-import { Box, TextField, Button, Grid } from "@mui/material";
+import { Box, TextField, Button, Grid, Dialog, DialogContent, DialogTitle, DialogActions } from "@mui/material";
 import { styled } from '@mui/material/styles';
 
 const VisuallyHiddenInput = styled('input')({
@@ -22,9 +22,14 @@ function AddArt(props) {
     const [selectedImage, setSelectedImage] = useState('');
     const [previewImage, setPreviewImage] = useState('');
     const [isEditing, setIsEditing] = useState(false);
+    const [open, setOpen] = useState(false);
     const fileInputRef = useRef('');
 
     const navigate = useNavigate();
+
+    const handleClose = () => { 
+        setOpen(false);
+    }
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -71,6 +76,7 @@ function AddArt(props) {
                 setPreviewImage(null);
                 setSelectedImage(null);
                 setIsEditing(false);
+                setOpen(false);
                 navigate("artist/gallery");
             }
         } catch (error) {
@@ -80,12 +86,20 @@ function AddArt(props) {
 
     const handleEditClick = () => {
         setIsEditing(true);
+        setOpen(true);
     };
 
     return (
-        <div className="addArt">
-            {isEditing ? (
-                <>
+        <>
+            <Button sx={{ m: "2%" }} variant="contained" color="primary" onClick={handleEditClick}>
+                Add Art
+            </Button>
+            <Dialog
+                width="100vw"
+                open={open}
+                onClose={handleClose}>
+                <DialogTitle>Add Art</DialogTitle>
+                <DialogContent>
                     <Button
                         variant="contained"
                         startIcon={<AddPhotoAlternateTwoToneIcon />}
@@ -117,7 +131,7 @@ function AddArt(props) {
 
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
-                                <>
+                                
                                     <TextField
                                         label="Name"
                                         name="name"
@@ -160,24 +174,24 @@ function AddArt(props) {
                                         onChange={handleInputChange}
                                         margin="normal"
                                     />
-                                </>
+                               
                             </Grid>
                         </Grid>
                     </Box>
-                </>
-            ) : null}
-            <div>
-                {isEditing ? (
-                    <Button variant="contained" color="primary" onClick={handleClick}>
+                </DialogContent>
+            
+            <DialogActions>
+                                    <Button variant="contained" color="primary" onClick={handleClick}>
                         Save
                     </Button>
-                ) : (
-                    <Button sx={{ m: "2%" }} variant="contained" color="primary" onClick={handleEditClick}>
-                        Add Art
+                
+                    <Button variant="contained" color="secondary" onClick={handleClose}>
+                        Cancel
                     </Button>
-                )}
-            </div>
-        </div>
+                
+                </DialogActions>
+            </Dialog>
+        </>
     );
 }
 

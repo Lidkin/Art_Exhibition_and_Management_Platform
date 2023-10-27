@@ -10,11 +10,11 @@ function Artist(props) {
     return (
         <ActiveOpencallContext.Provider value={{ opencallContext, setOpencallContext }}>
             <div className='artist'>
-                <ChooseOpencall />
+                <ChooseOpencall /><AddArt />
                 <Routes>
                     <Route path="/gallery" element={<ArtistGallery title="Artist Gallery" />} />
                 </Routes>
-                <AddArt />
+                
             </div>
         </ActiveOpencallContext.Provider>
     );

@@ -4,22 +4,34 @@ const userId = require('../modules/userid.js');
 const _allLocations = async (username) => {
     try {
         const user_id = await userId(username);
-   
-        return db('location').whereIn('id',
-            db('users_location').select('location_id').whereIn("users_id", user_id))
-            .select("name")
+        return db('location')
+            .where('user_id', user_id)
+            .select("id", "name")
             .returning(["id", "name"]);
     } catch (error) {
         console.log(error);
     };
 };
 
-const _getLocationByOpencall = async (opencall_id) => {
-    try {
-        const location_id = await db("opencall").where({ id: opencall_id }).returning("location_id");
+const _getLocationById = async (id, username) => { 
+try {
+    const user_id = await userId(username);
+    return db('location')
+        .where('id', id)
+        .andWhere('user_id', user_id)
+        .select("name", "address", "info", "url", "contact")
+        .returning(["name", "address", "info", "url", "contact"]);
+} catch (error) {
+    console.log(error);
+}
+};
 
+const _getLocationByOpencall = async (opencall_id, username) => {
+    try {
+        const location_ids = await db("opencall").where("id", opencall_id).select("location_id").returning(["location_id"]);
+        const ids = location_ids.map(item => item.location_id);
         return db("location")
-            .where({id:location_id[0].id})
+            .whereIn("id", ids)
             .select("name", "address", "info", "url", "contact")
             .returning(["name", "address", "info", "url", "contact"]);
     } catch (error) {
@@ -46,4 +58,4 @@ const _addLocation = async (location, username) => {
     };
 };
 
-module.exports = { _addLocation, _allLocations, _getLocationByOpencall };
+module.exports = { _addLocation, _allLocations, _getLocationByOpencall, _getLocationById };

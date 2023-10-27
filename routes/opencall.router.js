@@ -18,11 +18,10 @@ const fileFilter = (req, file, cb) => file.mimetype.split("/")[0] === "image" ? 
 
 const upload = multer({ storage, fileFilter, limits: { fileSize: 1000000 } });
 
-// oRouter.get('/opencall_id', getOpencall);
 oRouter.get('/all', verifyToken, allOpencalls);
 oRouter.patch('/add', verifyToken, upload.single("file"), addOpencall);
 oRouter.get('/status', verifyToken, opencallByStatus);
 oRouter.get('/byimage', opencallByImageId);
-oRouter.get('/byid', getOpencall);
+oRouter.get('/byid', verifyToken, getOpencall);
 
 module.exports = { oRouter };

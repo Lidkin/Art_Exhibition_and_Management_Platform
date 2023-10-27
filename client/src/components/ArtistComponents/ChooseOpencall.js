@@ -2,21 +2,32 @@ import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Button, InputLabel, FormControl, Select, Box } from "@mui/material";
 import { ActiveOpencallContext } from "../Artist";
+import './Artist.style.css';
 
 function ChooseOpencall(props) {
     const [activeOpencall, setOpencall] = useState([]);
     const [listActiveOpencalls, setListOpencalls] = useState('');
     const { opencallContext, setOpencallContext } = useContext(ActiveOpencallContext);
-    const [isFocused, setIsFocused] = useState(false);
+    const [show, setShow] = useState(false);
+
+    const handleHide = () => {
+        setShow(false);
+        setOpencallContext({});
+        setOpencall([]);
+    };
+
+    const handleShow = () => {
+        setShow(true);
+    };
 
     useEffect(() => {
         const getActiveOpencalls = async () => {
             try {
                 const res = await axios.get("/api/opencall/status?status=active");
-                console.log("active opencalls",res.data);
+                console.log("active opencalls", res.data);
                 if (res.status === 200) {
                     const arrOpencalls = res.data.map((item) => { return { name: item.name, id: item.id } });
-          
+
                     setListOpencalls(arrOpencalls);
                 };
             } catch (error) {
@@ -27,7 +38,7 @@ function ChooseOpencall(props) {
     }, []);
 
 
-    const handleChangeMultiple = (event) => {
+    const handleChange = (event) => {
         const { options } = event.target;
         const value = [];
         let contextOpencall;
@@ -35,64 +46,57 @@ function ChooseOpencall(props) {
             if (options[i].selected) {
                 const opencall = listActiveOpencalls.find((item) => item.id == options[i].value)
                 value.push(options[i].value);
-                console.log(" from list opebcalls",opencall);
-                contextOpencall = {...opencallContext, ...opencall};
+                console.log(" from list opencalls", opencall);
+                contextOpencall = { ...opencallContext, ...opencall };
             }
         }
 
-        setOpencall(value);
+        setOpencall([...activeOpencall, ...value]);
         setOpencallContext(contextOpencall);
     };
 
-    const handleCheckboxFocus = () => {
-        const updOpencallContext = opencallContext;
-        updOpencallContext["focused"] = true;
-        setIsFocused(true);
-        setOpencallContext(updOpencallContext);
-    };
-
-    const handleBlur = () => {
-        const updOpencallContext = opencallContext;
-        updOpencallContext["focused"] = false;
-        setIsFocused(false);
-        setOpencallContext(updOpencallContext);
-    };
-
-
     return (
         <>
-            { console.log("context", opencallContext)}
             {listActiveOpencalls !== '' ?
-        (<Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            '& .MuiTextField-root': { width: '50ch' },
-            alignItems: "center"
-        }}>
-            <FormControl sx={{ m: 1, minWidth: "15%", maxWidth: "fit-content", maxHeight: "fit-content(50%)" }}>
-                <InputLabel shrink htmlFor="select-multiple-native">
-                    Active Opencalls
-                </InputLabel>
-                <Select
-                    multiple
-                    native
-                    value={activeOpencall}
-                    onChange={handleChangeMultiple}
-                    label="Active Opencalls"
-                    inputProps={{
-                        id: 'select-multiple-native',
-                    }}
-                    onFocus={handleCheckboxFocus}
-                    onBlur={handleBlur}
-                >
-                    {listActiveOpencalls.map((opencall) => (
-                        <option key={opencall.name} value={opencall.id}>
-                            {opencall.name}
-                        </option>
-                    ))}
-                </Select>
-            </FormControl>
-                </Box>) : null}
+                (
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        '& .MuiTextField-root': { width: '50ch' },
+                        alignItems: "center"
+                    }}>
+                        {!show ? <Button sx={{ display: 'block', mt: 2 }} onClick={handleShow}>
+                            Show Opencalls
+                        </Button> : <Button sx={{ display: 'block', mt: 2 }} onClick={handleHide}>
+                            Hide Opencalls
+                        </Button>}
+
+                        {show && <FormControl sx={{ m: 1, minWidth: "15%", maxWidth: "fit-content", maxHeight: "fit-content(50%)" }}>
+                            
+                                <InputLabel shrink htmlFor="select-multiple-native">
+                                    Active Opencalls
+                                </InputLabel>
+                            <Select
+                                multiple
+                                native
+                                value={activeOpencall}
+                                onChange={handleChange}
+                                label="Choose Opencall"
+                                inputProps={{
+                                    id: 'select-multiple-native',
+                                    }}
+                                >
+                                    {listActiveOpencalls.map((opencall) => (
+                                        <option key={opencall.name} value={opencall.id}>
+                                            {opencall.name}
+                                        </option>
+                                    ))}
+                                </Select>
+                            
+                        </FormControl>}
+
+                    </Box>
+                ) : null}
         </>
 
     );

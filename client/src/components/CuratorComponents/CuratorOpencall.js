@@ -20,7 +20,7 @@ function Opencall(props) {
         const opencallsList = async () => {
             let opencallArr = null;
             try {
-                const res = await axios.get('/api/opencall?status=active');
+                const res = await axios.get('/api/opencall/status?status=active');
                 if (res.status === 200) {
                     opencallArr = res.data;
                 };
