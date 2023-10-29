@@ -26,8 +26,9 @@ function ChooseOpencall(props) {
                 const res = await axios.get("/api/opencall/status?status=active");
                 console.log("active opencalls", res.data);
                 if (res.status === 200) {
+                    console.log("data",res.data);
                     const arrOpencalls = res.data.map((item) => { return { name: item.name, id: item.id } });
-
+                    console.log("array opencalls",arrOpencalls);
                     setListOpencalls(arrOpencalls);
                 };
             } catch (error) {
@@ -46,6 +47,7 @@ function ChooseOpencall(props) {
             if (options[i].selected) {
                 const opencall = listActiveOpencalls.find((item) => item.id == options[i].value)
                 value.push(options[i].value);
+                console.log("list active opencalls",listActiveOpencalls);
                 console.log(" from list opencalls", opencall);
                 contextOpencall = { ...opencallContext, ...opencall };
             }
@@ -74,7 +76,7 @@ function ChooseOpencall(props) {
                         {show && <FormControl sx={{ m: 1, minWidth: "15%", maxWidth: "fit-content", maxHeight: "fit-content(50%)" }}>
                             
                                 <InputLabel shrink htmlFor="select-multiple-native">
-                                    Active Opencalls
+                                    Choose Opencall
                                 </InputLabel>
                             <Select
                                 multiple

@@ -4,8 +4,9 @@ const userId = require('../modules/userid.js');
 const _allLocations = async (username) => {
     try {
         const user_id = await userId(username);
-        return db('location')
-            .where('user_id', user_id)
+        return db("user_location")
+            .where("user_id", user_id)
+            .join("location", "user_location.location_id", "location.id")
             .select("id", "name")
             .returning(["id", "name"]);
     } catch (error) {

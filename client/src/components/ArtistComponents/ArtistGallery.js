@@ -54,6 +54,7 @@ function ArtistGallery(props) {
     const [selectedCard, setSelectedCard] = useState('');
     const [approvedArt, setApprovedArts] = useState(null);
     const [buttonClicked, setButtonClicked] = useState(false);
+    const [message, setMessage] = useState('');
 
 
     const handleCardHover = (index) => {
@@ -95,7 +96,10 @@ function ArtistGallery(props) {
             updatedSubmittedImages.splice(updatedSubmittedImages.indexOf(index), 1);
         } else {
             updatedSubmittedImages.push(index);
-        }
+        };
+        console.log("max number of art", opencallContext.maxnumber, "for submit", updatedSubmittedImages.length)
+
+        updatedSubmittedImages.length >= opencallContext.maxnumber && setMessage(`max number of artworks is ${opencallContext.maxnumber}`);
         setSubmitImages(updatedSubmittedImages);
         setButtonClicked(false);
     };
@@ -135,7 +139,7 @@ function ArtistGallery(props) {
                 <CircularProgress />
             ) : (
                     <div id="arts-container">
-                    {opencallContext.name && <Button onClick={handleSelectClick}>Send art to Opencall {opencallContext.name}</Button>}
+                        {opencallContext.name && message === '' ? <Button onClick={handleSelectClick}>Send art to Opencall {opencallContext.name}</Button> : <h2>{message}</h2>}
                         <Container fixed >
                         <Grid container columnSpacing={{ xs: 1, sm: 2, md: 3, lg: 4 }} rowSpacing={2}>
                             {itemData.map((item, index) => (

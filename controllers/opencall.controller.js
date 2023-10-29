@@ -5,8 +5,9 @@ const addOpencall = async (req, res) => {
     let opencallInfo;
     try {
         const username = req.user.username;
-        console.log(req.body);
-        if (req.file !== null) {
+
+        if (req.file !== undefined || req.file !== null) {
+            console.log("file",req.file);
             const imageUrl = await S3Uploadv3(req.file, "posters");
             opencallInfo = { ...req.body, url: imageUrl.Location };
         } else {
@@ -21,7 +22,9 @@ const addOpencall = async (req, res) => {
 
 const allOpencalls = async (req, res) => {
     try {
-        const row = await _allOpencalls(req.user.username);
+        const username = req.user.username;
+        const row = await _allOpencalls(username);
+        console.log("all rows of opencalls", row);
         res.json(row);
     } catch (error) {
         console.log("all opencalls", error);
@@ -42,7 +45,7 @@ const opencallByStatus = async (req, res) => {
         const username = req.user.username;
         const status = req.query.status;
         const row = await _opencallByStatus(status, username);
-        console.log(status)
+        console.log("row by status", row)
         res.json(row);
     } catch (error) {
         console.log("opencalls by status", error);

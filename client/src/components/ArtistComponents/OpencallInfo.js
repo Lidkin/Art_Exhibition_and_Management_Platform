@@ -90,7 +90,7 @@ function OpencallInfo(props) {
                                         <ListItemText primary="Deadline: " secondary={dbDeadLine} />
                                         <ListItemText primary="Fee: " secondary={opencall.fee} />
                                         <ListItemText primary="Max count of works: " secondary={opencall.maxnumber} />
-                                        <ListItemText primary="Description: " secondary={opencall.descriptios} />
+                                        <ListItemText primary="Description: " secondary={opencall.description} />
                                     </List>
                                 </Collapse>
                             </>
