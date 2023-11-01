@@ -23,8 +23,8 @@ function OpencallInfo(props) {
 
     const handleClick = (opencall) => {
         setOpenList(!openList);
-        formattedDate(opencall.date);
-        formattedDeadline(opencall.deadline);
+        opencall.date !== null && formattedDate(opencall.date);
+        opencall.deadline !== null && formattedDeadline(opencall.deadline);
     };
 
     const formattedDate = (dbDate) => {

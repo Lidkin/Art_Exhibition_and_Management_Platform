@@ -1,11 +1,7 @@
-const { addArtImage,
-    allArtImages,
-    getArtImage,
-    artImagesByOpencall,
-    addArtImageToOpencall,
-    deleteOpencallImage,
-    changeImageStatus,
-    updateArtInfo } = require('../controllers/gallery.controller.js');
+const { addArtImage, allArtImages, getArtImage,
+    artImagesByOpencall, addArtImageToOpencall, deleteOpencallImage,
+    updateArtInfo, getArtImagesIdsByOpencall, listOpencallsForSubbmit,
+    getImageStatus } = require('../controllers/gallery.controller.js');
 const { verifyToken } = require('../middlewares/verify.token.js');
 const express = require('express');
 const gRouter = express.Router();
@@ -25,13 +21,15 @@ const fileFilter = (req, file, cb) => file.mimetype.split("/")[0] === "image" ? 
 
 const upload = multer({ storage, fileFilter, limits: { fileSize: 2000000 } });
 
-gRouter.post('/addimage', verifyToken, upload.single("file"), addArtImage);
-gRouter.post('/addimageopencall', verifyToken, addArtImageToOpencall);
-gRouter.get('/getimages', verifyToken, allArtImages);
+gRouter.post('/addimage', verifyToken, upload.single("file"), addArtImage);  // add art image and info to table "image"
+gRouter.post('/addimageopencall', verifyToken, addArtImageToOpencall); // add image_id, opencall_id and status to table "opencall_image"
+gRouter.get('/allimages', verifyToken, allArtImages);  // all images of user with role=artist
 gRouter.get('/byid', verifyToken, getArtImage);
 gRouter.get('/byopencall', verifyToken, artImagesByOpencall);
-gRouter.delete('/reject', verifyToken, deleteOpencallImage);
-gRouter.patch('/status', verifyToken, changeImageStatus);
+gRouter.delete('/delete', verifyToken, deleteOpencallImage);
+gRouter.get('/status', getImageStatus);  // get status of art image from table "opencall_image"  with /api/gallery/status
 gRouter.patch('/update', verifyToken, updateArtInfo);
+gRouter.get('/getids', verifyToken, getArtImagesIdsByOpencall);
+gRouter.get('/listopencalls', listOpencallsForSubbmit);  // /api/gallery/listopencalls?ids=imageIds
 
 module.exports = { gRouter };

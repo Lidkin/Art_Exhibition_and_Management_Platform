@@ -44,7 +44,8 @@ function ChangeArtInfo(props) {
         setOpen(false);
     };
 
-    const handleClickOpen = () => {
+    const handleClickOpen = async () => {
+        // const status = await axios.get(`api/gallery/status?id=${artInfo.id}`)
         setIsEditing(false);
         setOpen(true);
     };

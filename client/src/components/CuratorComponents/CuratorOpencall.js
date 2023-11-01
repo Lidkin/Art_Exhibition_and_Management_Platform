@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useContext } from 'react';
-import { ToggleButtonGroup, ToggleButton, Button, Collapse, ListItemText, List, ListItemButton } from "@mui/material";
+import { ToggleButtonGroup, ToggleButton, Button, Collapse, ListItemText, List, ListItemButton, ButtonGroup } from "@mui/material";
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import AddOpencall from './AddOpencall';
@@ -62,7 +62,7 @@ function Opencall(props) {
     const handleOpencall = (e) => {
         const arrOpencall = e.target.value.split(',');
         setOpencallInfo({ name: arrOpencall[0], id:arrOpencall[1]});
-        navigate("gallery");
+        navigate(`${e.target.id}`);
     };
 
     return (
@@ -86,7 +86,7 @@ function Opencall(props) {
                 <List sx={{ width: '100%', maxWidth: '90vw', bgcolor: 'background.paper' }}>
                     {opencalls.map((item, index) => (
                         <div key={index}>
-                            <ListItemButton onClick={() => handleListClick(index)}>
+                            <ListItemButton key={index} onClick={() => handleListClick(index)}>
                                 <ListItemText primary={item.name} />
                                 {openItemIndex === index ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>
@@ -97,7 +97,12 @@ function Opencall(props) {
                                             return null;
                                         }; // Skip the 'name' property
                                         if (key === 'id') {
-                                            return (<Button value={[item["name"],item["id"]]} onClick={(e) => handleOpencall(e)}>Gallery</Button>);                                        }
+                                            return (
+                                                <ButtonGroup variant="text" aria-label="text button group">
+                                                <Button id="submitted" value={[item["name"], item["id"]]} onClick={(e) => handleOpencall(e)}>Submitted Artworks</Button>
+                                                <Button id="gallery" value={[item["name"], item["id"]]} onClick={(e) => handleOpencall(e)}>Gallery</Button>
+                                                </ButtonGroup>);
+                                        }
                                         return (
                                             <ListItemButton sx={{ pl: 4 }} key={subIndex}>
                                                 <ListItemText primary={`${key}: ${item[key]}`} />

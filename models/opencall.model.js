@@ -77,4 +77,16 @@ const _getOpencall = async (id) => {
     };
 };
 
-module.exports = { _addOpencall, _allOpencalls, _opencallByStatus, _opencallByImageId, _getOpencall };
+const _changeImageStatus = async (status, imageIds, opencall_id) => {  // axios.patch("/api/opencall/status", { status: "submitted", imageIds: selectedImageIds, opencallId: opencall_id })
+    try {
+        return db("opencall_image")
+            .whereIn("image_id", imageIds)
+            .andWhere("opencall_id", opencall_id)
+            .update({ status: status });
+    } catch (error) {
+        console.log(error);
+    };
+};
+
+
+module.exports = { _addOpencall, _allOpencalls, _opencallByStatus, _opencallByImageId, _getOpencall, _changeImageStatus };

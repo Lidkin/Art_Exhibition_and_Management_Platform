@@ -1,4 +1,4 @@
-const { addOpencall, allOpencalls, opencallByImageId, opencallByStatus, getOpencall } = require('../controllers/opencall.controller.js');
+const { addOpencall, allOpencalls, opencallByImageId, opencallByStatus, getOpencall, changeImageStatus } = require('../controllers/opencall.controller.js');
 const { verifyToken } = require('../middlewares/verify.token.js');
 const express = require('express');
 const oRouter = express.Router();
@@ -23,5 +23,6 @@ oRouter.patch('/add', verifyToken, upload.single("file"), addOpencall);
 oRouter.get('/status', verifyToken, opencallByStatus);
 oRouter.get('/byimage', opencallByImageId);
 oRouter.get('/byid', verifyToken, getOpencall);
+oRouter.patch('/artstatus', verifyToken, changeImageStatus);  // change status of art image in table "opencall_image"  with /api/gallery/status
 
 module.exports = { oRouter };

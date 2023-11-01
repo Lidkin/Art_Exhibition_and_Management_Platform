@@ -17,10 +17,10 @@ import {
     DialogTitle
 } from "@mui/material";
 
-import { OpencallContext, ArtworksContext } from "../Curator";
+import { OpencallContext } from "../Curator";
 
 
-function CuratorGallery(props) {
+function SubmittedArtworks(props) {
     const [itemData, setItemdata] = useState(null);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
@@ -28,12 +28,11 @@ function CuratorGallery(props) {
     const [favoriteImages, setFavoriteImages] = useState([]);
     const [rejectedImages, setRejectedImages] = useState([]);
     const { opencallInfo, setOpencallInfo } = useContext(OpencallContext);
-    const { artworkInfo, setArtworkInfo } = useContext(ArtworksContext);
 
     useEffect(() => {
         const getAllArtImages = async () => {
             try {
-                const res = opencallInfo.imageid ? await axios.get(`/api/gallery/byid?image_id=${opencallInfo.imageid}`) : await axios.get(`/api/gallery/byopencall?opencall_id=${opencallInfo.id}`);
+                const res = await axios.get(`/api/gallery/byopencall?opencall_id=${opencallInfo.id}`);
                 if (res.status === 200) {
                     setItemdata(res.data);
                     setLoading(false);
@@ -66,14 +65,14 @@ function CuratorGallery(props) {
         setFavoriteImages(updatedSelectedImages);
     };
 
-    const toggleReject = (index) => { 
+    const toggleReject = (index) => {
         const updatedSelectedImages = [...rejectedImages];
         if (updatedSelectedImages.includes(index)) {
             updatedSelectedImages.splice(updatedSelectedImages.indexOf(index), 1);
         } else {
             updatedSelectedImages.push(index);
         }
-        setRejectedImages(updatedSelectedImages); 
+        setRejectedImages(updatedSelectedImages);
     };
 
     const handleSelectClick = async () => {
@@ -83,7 +82,9 @@ function CuratorGallery(props) {
 
             const resFav = await axios.patch('/api/opencall/artstatus', { status: "approved", imageIds: selectedFavImageIds, opencallId: opencallInfo.id });
             const resRej = await axios.patch('/api/opencall/artstatus', { status: "rejected", imageIds: selectedRejImageIds, opencallId: opencallInfo.id });
-            if (resFav.status === 200) { console.log(resFav.data) };
+            if (resFav.status === 200) {
+                console.log(resFav.data)
+            };
             if (resRej.status === 200) { console.log(resRej.data) };
         } catch (error) {
             console.log(error);
@@ -97,7 +98,7 @@ function CuratorGallery(props) {
         </>
     ) : (
         <>
-                <h2>Submitted artworks to {opencallInfo.name}</h2>
+            <h2>Submitted artworks to {opencallInfo.name}</h2>
             {
                 loading ? (
                     <CircularProgress />
@@ -117,7 +118,7 @@ function CuratorGallery(props) {
                                         </ImageListItem>
                                         {!rejectedImages.includes(index) && <Checkbox
                                             icon={<FavoriteBorder />}
-                                            checkedIcon={<Favorite sx={{ color:"#13770e"}} />}
+                                            checkedIcon={<Favorite sx={{ color: "#13770e" }} />}
                                             checked={favoriteImages.includes(index)}
                                             onChange={() => toggleFavorite(index)}
                                             inputProps={{ 'aria-label': 'controlled' }} />}
@@ -153,10 +154,10 @@ function CuratorGallery(props) {
                         </Dialog>
                     </Box>
                 )}
-                <Button onClick={handleSelectClick}>Сonfirm Selection</Button>
+            <Button onClick={handleSelectClick}>Сonfirm Selection</Button>
         </>
     )
     );
 };
 
-export default CuratorGallery;
+export default SubmittedArtworks;

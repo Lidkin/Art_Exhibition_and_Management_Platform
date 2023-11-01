@@ -1,4 +1,4 @@
-const { _addOpencall, _allOpencalls, _opencallByImageId, _opencallByStatus, _getOpencall } = require('../models/opencall.model.js');
+const { _addOpencall, _allOpencalls, _opencallByImageId, _opencallByStatus, _getOpencall, _changeImageStatus } = require('../models/opencall.model.js');
 const { S3Uploadv3 } = require('../s3Service.js');
 
 const addOpencall = async (req, res) => {
@@ -7,7 +7,7 @@ const addOpencall = async (req, res) => {
         const username = req.user.username;
 
         if (req.file !== undefined || req.file !== null) {
-            console.log("file",req.file);
+            console.log("file", req.file);
             const imageUrl = await S3Uploadv3(req.file, "posters");
             opencallInfo = { ...req.body, url: imageUrl.Location };
         } else {
@@ -31,7 +31,7 @@ const allOpencalls = async (req, res) => {
     };
 };
 
-const opencallByImageId = async (req, res) => { 
+const opencallByImageId = async (req, res) => {
     try {
         const image_id = req.query.id;
         const rows = await _opencallByImageId(image_id);
@@ -45,7 +45,6 @@ const opencallByStatus = async (req, res) => {
         const username = req.user.username;
         const status = req.query.status;
         const row = await _opencallByStatus(status, username);
-        console.log("row by status", row)
         res.json(row);
     } catch (error) {
         console.log("opencalls by status", error);
@@ -54,13 +53,23 @@ const opencallByStatus = async (req, res) => {
 
 const getOpencall = async (req, res) => {
     try {
-    const username = req.user.username;
-    const id = req.query.id;
-    const row = await _getOpencall(id, username);
-    res.json(row);
-} catch (error) {
-    console.log(error);
-}
+        const username = req.user.username;
+        const id = req.query.id;
+        const row = await _getOpencall(id, username);
+        res.json(row);
+    } catch (error) {
+        console.log(error);
+    }
 };
 
-module.exports = { addOpencall, allOpencalls, opencallByStatus, opencallByImageId, getOpencall };
+const changeImageStatus = async (req, res) => { //change status of artwork to accepted or rejected
+    try {
+        const { status, imageIds, opencallId } = req.body;
+        const data = await _changeImageStatus(status, imageIds, opencallId);
+        res.json(data);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+module.exports = { addOpencall, allOpencalls, opencallByStatus, opencallByImageId, getOpencall, changeImageStatus };
