@@ -1,5 +1,5 @@
 const { addArtImage, allArtImages, getArtImage,
-    artImagesByOpencall, addArtImageToOpencall, deleteOpencallImage,
+    addArtImageToOpencall, deleteOpencallImage,
     updateArtInfo, getArtImagesIdsByOpencall, listOpencallsForSubbmit,
     getImageStatus } = require('../controllers/gallery.controller.js');
 const { verifyToken } = require('../middlewares/verify.token.js');
@@ -25,7 +25,6 @@ gRouter.post('/addimage', verifyToken, upload.single("file"), addArtImage);  // 
 gRouter.post('/addimageopencall', verifyToken, addArtImageToOpencall); // add image_id, opencall_id and status to table "opencall_image"
 gRouter.get('/allimages', verifyToken, allArtImages);  // all images of user with role=artist
 gRouter.get('/byid', verifyToken, getArtImage);
-gRouter.get('/byopencall', verifyToken, artImagesByOpencall);
 gRouter.delete('/delete', verifyToken, deleteOpencallImage);
 gRouter.get('/status', getImageStatus);  // get status of art image from table "opencall_image"  with /api/gallery/status
 gRouter.patch('/update', verifyToken, updateArtInfo);

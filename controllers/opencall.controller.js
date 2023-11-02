@@ -1,4 +1,6 @@
-const { _addOpencall, _allOpencalls, _opencallByImageId, _opencallByStatus, _getOpencall, _changeImageStatus } = require('../models/opencall.model.js');
+const { _addOpencall, _allOpencalls, _opencallByImageId,
+    _opencallByStatus, _getOpencall, _changeImageStatus,
+    _artImagesByOpencall, _countArt } = require('../models/opencall.model.js');
 const { S3Uploadv3 } = require('../s3Service.js');
 
 const addOpencall = async (req, res) => {
@@ -64,7 +66,11 @@ const getOpencall = async (req, res) => {
 
 const changeImageStatus = async (req, res) => { //change status of artwork to accepted or rejected
     try {
-        const { status, imageIds, opencallId } = req.body;
+        console.log("query=>",req.query.imageIds);
+        const status = req.query.status;
+        const imageIds = req.query.imageIds;
+        const opencallId = req.query.opencallId;
+
         const data = await _changeImageStatus(status, imageIds, opencallId);
         res.json(data);
     } catch (error) {
@@ -72,4 +78,26 @@ const changeImageStatus = async (req, res) => { //change status of artwork to ac
     }
 };
 
-module.exports = { addOpencall, allOpencalls, opencallByStatus, opencallByImageId, getOpencall, changeImageStatus };
+const artImagesByOpencall = async (req, res) => { // used in side curator
+    try {
+        const opencall_id = req.query.opencallId;
+        const status = req.query.status;
+        const row = await _artImagesByOpencall(opencall_id, status);
+        res.json(row);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const countArt = async (req, res) => {
+    const opencall_id = req.query.opencallId;
+    const status = req.query.status;
+    const count = await _countArt(opencall_id, status);
+    res.json(count);
+};
+
+module.exports = {
+    addOpencall, allOpencalls, opencallByStatus,
+    opencallByImageId, getOpencall, changeImageStatus,
+    artImagesByOpencall, countArt
+};

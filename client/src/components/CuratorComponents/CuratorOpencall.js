@@ -1,7 +1,10 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useContext } from 'react';
-import { ToggleButtonGroup, ToggleButton, Button, Collapse, ListItemText, List, ListItemButton, ButtonGroup } from "@mui/material";
+import {
+    ToggleButtonGroup, ToggleButton, Button, Collapse, ListItemText,
+    List, ListItemButton, ButtonGroup, Chip, Stack, Divider
+} from "@mui/material";
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import AddOpencall from './AddOpencall';
@@ -98,10 +101,12 @@ function Opencall(props) {
                                         }; // Skip the 'name' property
                                         if (key === 'id') {
                                             return (
-                                                <ButtonGroup variant="text" aria-label="text button group">
-                                                <Button id="submitted" value={[item["name"], item["id"]]} onClick={(e) => handleOpencall(e)}>Submitted Artworks</Button>
-                                                <Button id="gallery" value={[item["name"], item["id"]]} onClick={(e) => handleOpencall(e)}>Gallery</Button>
-                                                </ButtonGroup>);
+                                                <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
+                                                    <Button
+                                                        variant="contained" sx={{ bgcolor: "rgba(120, 10, 200, 0.3)"}} id="submitted" value={[item["name"], item["id"]]} onClick={(e) => handleOpencall(e)}>Submitted Artworks</Button>
+                                                    <Button
+                                                        id="gallery" value={[item["name"], item["id"]]} onClick={(e) => handleOpencall(e)}>Gallery</Button>
+                                                </Stack>);
                                         }
                                         return (
                                             <ListItemButton sx={{ pl: 4 }} key={subIndex}>

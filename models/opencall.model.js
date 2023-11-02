@@ -8,7 +8,10 @@ const _allOpencalls = async (username) => {
         return db("opencall")
             .where("user_id", user_id)
             .fullOuterJoin("location", "opencall.location_id", "location.id_location")
-            .column(["opencall.id", "opencall.name", "opencall.description", "opencall.date", "opencall.deadline", "opencall.maxnumber", "opencall.fee", "opencall.max_width", "opencall.max_height", "opencall.status", "location.name as location_name", "location.address", "location.contact", "location.url", "location.info"])
+            .column(["opencall.id", "opencall.name", "opencall.description", "opencall.date",
+                "opencall.deadline", "opencall.maxnumber", "opencall.fee", "opencall.max_width",
+                "opencall.max_height", "opencall.status", "location.name as location_name",
+                "location.address", "location.contact", "location.url", "location.info"])
             .select();
     } catch (error) {
         console.log("all opencalls model", error);
@@ -79,14 +82,50 @@ const _getOpencall = async (id) => {
 
 const _changeImageStatus = async (status, imageIds, opencall_id) => {  // axios.patch("/api/opencall/status", { status: "submitted", imageIds: selectedImageIds, opencallId: opencall_id })
     try {
+        const arrIds = imageIds.length < 2 ? [...imageIds] : imageIds.split(',');
+        console.log("array", arrIds);
         return db("opencall_image")
-            .whereIn("image_id", imageIds)
-            .andWhere("opencall_id", opencall_id)
-            .update({ status: status });
+            .where("opencall_id", opencall_id)
+            .whereIn("image_id", arrIds)
+            .update("status", status);
     } catch (error) {
         console.log(error);
     };
 };
 
+const _artImagesByOpencall = async (opencall_id, status) => {
+    try {
+        console.log("status",status);
+        const arrStatus = status.includes(',') ? status.split(',') : [status];
+        console.log("array of status=>", arrStatus);
+        return db("opencall_image")
+            .where("opencall_id", opencall_id)
+            .whereIn("status", arrStatus)
+            .leftJoin("image", "opencall_image.image_id", "image.id")
+            .leftJoin("size", "image.size_id", "size.id")
+            .select("image.id", "image.url", "image.name", "image.creation_year", "image.price", "image.description", "size.width", "size.height")
+            .returning(["url", "id", "name", "creation_year", "price", "description", "width", "height"]);
+    } catch (error) {
+        console.error(error);
+    };
+};
 
-module.exports = { _addOpencall, _allOpencalls, _opencallByStatus, _opencallByImageId, _getOpencall, _changeImageStatus };
+const _countArt = async (opencall_id, status) => { 
+    try {
+        const arrStatus = status.split(',');
+        return db("opencall_image")
+            .where("opencall_id", opencall_id)
+            .whereIn("status", arrStatus)
+            .count('* as count')
+            .returning(['count']);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+module.exports = {
+    _addOpencall, _allOpencalls, _opencallByStatus,
+    _opencallByImageId, _getOpencall, _changeImageStatus,
+    _artImagesByOpencall, _countArt
+};

@@ -2,8 +2,8 @@ import React, { useState, createContext } from 'react';
 import { Routes, Route } from "react-router-dom";
 //import SelectArt from './CuratorComponents/SelectArt';
 import Opencall from './CuratorComponents/CuratorOpencall';
-import CuratorGallery from './CuratorComponents/CuratorGallery';
-import SubmittedArtworks from './CuratorComponents/SubmittedArtWorks';
+import Gallery from './CuratorComponents/Gallery';
+//import SubmittedArtworks from './CuratorComponents/SubmittedArtWorks';
 
 export const OpencallContext = createContext(null);
 export const ArtworksContext = createContext(null);
@@ -17,9 +17,8 @@ function Curator(props) {
             <div className='curator'>
                 <Routes>
                     <Route path="opencall" element={<Opencall title="Opencall" />} />
-                    <Route path="opencall/submitted" element={<SubmittedArtworks title="Submitted Artworks" />} />
-                    <Route path="opencall/gallery" element={<CuratorGallery title="Gallery" />} />
-                </Routes>
+                        <Route path="opencall/:title" element={<Gallery />} />
+                    </Routes>
                 </div>
             </ArtworksContext.Provider>
         </OpencallContext.Provider>

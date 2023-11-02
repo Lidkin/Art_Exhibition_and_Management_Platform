@@ -60,33 +60,6 @@ const _addArtImageToOpencall = async (opencall_id, image_id, status) => { // add
         .insert({ opencall_id, image_id, status });
 };
 
-const _artImagesByOpencall = async (opencall_id) => {
-    try {
-        let width, height, image_id;
-        const sizeAndId = await db("opencall_image")
-            .where("opencall_id", opencall_id)
-            .join("opencall", "opencall_image.opencall_id", "opencall.id")
-            .select("opencall.max_width", "opencall.max_height", "opencall_image.image_id", "opencall_image.status")
-            .returning(["max_width", "max_height", "image_id", "status"]);
-
-        width = sizeAndId[0].max_width;
-
-        height = sizeAndId[0].max_height;
-
-        image_id = sizeAndId.map(item => item.image_id);
-
-        return db("image")
-            .whereIn("image.id", image_id)
-            .join("size", "image.size_id", "size.id")
-            .select("image.id", "image.url", "image.name", "image.creation_year", "image.price", "image.description", "size.width", "size.height")
-            .where("size.width", "<", width)
-            .where("size.height", "<", height)
-            .returning(["url", "id", "name", "creation_year", "price", "description", "width", "height"]);
-    } catch (error) {
-        console.error(error);
-    };
-};
-
 const _deleteOpencallImage = async (opencall_id, image_id) => {
     try {
         const id = image_id.split(",");
@@ -137,9 +110,27 @@ const _updateArtInfo = async (id, artInfo) => {
     }
 };
 
+// write endpoint for select art by max size artworcs:
+/*
+        let width, height, image_id;
+        const sizeAndId = await db("opencall_image")
+            .where("opencall_id", opencall_id)
+            .join("opencall", "opencall_image.opencall_id", "opencall.id")
+            .select("opencall.max_width", "opencall.max_height", "opencall_image.image_id", "opencall_image.status")
+            .returning(["max_width", "max_height", "image_id", "status"]);
+
+        width = sizeAndId[0].max_width;
+
+        height = sizeAndId[0].max_height;
+
+        image_id = sizeAndId.map(item => item.image_id);
+
+
+*/
+
 module.exports = {
     _addArtImage, _allArtImages, _getArtImage,
-    _artImagesByOpencall, _addArtImageToOpencall, _deleteOpencallImage,
+    _addArtImageToOpencall, _deleteOpencallImage,
     _updateArtInfo, _getArtImagesIdsByOpencall, _listOpencallsForSubbmit,
     _getImageStatus
 };

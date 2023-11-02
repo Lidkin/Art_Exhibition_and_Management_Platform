@@ -1,5 +1,5 @@
 const { _addArtImage, _allArtImages, _getArtImage,
-    _artImagesByOpencall, _addArtImageToOpencall, _deleteOpencallImage,
+   _addArtImageToOpencall, _deleteOpencallImage,
     _updateArtInfo, _getArtImagesIdsByOpencall, _listOpencallsForSubbmit,
     _getImageStatus} = require('../models/gallery.model.js');
 const { S3Uploadv3 } = require('../s3Service.js');
@@ -47,16 +47,6 @@ const getArtImage = async (req, res) => {
         console.log(error);
     };
 };
-
-const artImagesByOpencall = async (req, res) => {
-    try {
-        const opencall_id = req.query.opencall_id;
-        const row = await _artImagesByOpencall(opencall_id);
-        res.json(row);
-    } catch (error) {
-        console.log(error);
-    }
-}
 
 const addArtImageToOpencall = async (req, res) => {  // add image_id, opencall_id and status to table "opencall_image" with end-point /addimageopencall
     try {
@@ -125,7 +115,7 @@ const getImageStatus = async (req, res) => {
 
 module.exports = {
     addArtImage, allArtImages, getArtImage,
-    artImagesByOpencall, addArtImageToOpencall, deleteOpencallImage,
+    addArtImageToOpencall, deleteOpencallImage,
     updateArtInfo, getArtImagesIdsByOpencall, listOpencallsForSubbmit,
     getImageStatus
 };
