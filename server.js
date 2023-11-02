@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const cookieParser = require("cookie-parser");
 const multer = require('multer');
@@ -20,7 +21,8 @@ app.use(cookieParser());
 app.use((error, req, res, next) => {
     if (error instanceof multer.MulterError) {
         if (error.code === "LIMIT_FILE_SIZE") return res.status(400).json({ message: "file is too large" });
-        if (error.code === "LIMIT_UNEXPECTED_FILE") return res.status(400).json({ message: "file must to be an image" });}
+        if (error.code === "LIMIT_UNEXPECTED_FILE") return res.status(400).json({ message: "file must to be an image" });
+    }
 });
 
 app.use('/api/user', uRouter);
@@ -29,4 +31,10 @@ app.use('/api/gallery', gRouter);
 app.use('/api/location', lRouter);
 app.use('/api/opencall', oRouter);
 
-app.listen(process.env.PORT, console.log("port 3001"));
+app.listen(process.env.PORT, console.log(`listening on ${process.env.PORT}`));
+
+app.use(express.static(path.join(__dirname, "client/build")));
+
+app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "./client/build", "index.html"))
+});
