@@ -1,5 +1,38 @@
-.artist {
-    background-image: url('../media/bharath-g-s-aLGiPJ4XRO4-unsplash.jpg');
-    background-size: cover;
+.MuiInputBase-root.MuiFilledInput-root.MuiFilledInput-underline.MuiInputBase-colorPrimary.MuiInputBase-formControl {
+    background-color: rgba(250, 235, 215, 0.648);
+}
+
+.MuiTypography-root.MuiTypography-h6.MuiDialogTitle-root.css-bdhsul-MuiTypography-root-MuiDialogTitle-root {
+    color: black;
+}
+
+.MuiCardContent-root {
+    max-height: 5ch;
+}
+
+.MuiButtonBase-root.MuiButton-root {
+    margin-bottom: 2%;
+}
+
+.MuiButtonBase-root.MuiButton-root.button {
+    margin: 2%;
+}
+
+.MuiGrid-root>.MuiFormControl-root.MuiTextField-root {
+    margin: 2%;
+}
+
+.MuiGrid-root.MuiGrid-container {
+    justify-content: center;
+}
+
+h3 {
+    color: rgba(250, 235, 215, 0.932);
+}
+
+.MuiStack-root {
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
 }
 

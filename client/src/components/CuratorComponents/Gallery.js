@@ -122,22 +122,27 @@ function Gallery(props) {
                 const resFav = selectedFavImageIds.length > 0 && await axios.patch(`/api/opencall/artstatus?status=approved&imageIds=${selectedFavImageIds}&opencallId=${opencallInfo.id}`);
                 const resRej = selectedRejImageIds.length > 0 && await axios.patch(`/api/opencall/artstatus?status=rejected&imageIds=${selectedRejImageIds}&opencallId=${opencallInfo.id}`);
                 if (resRej.status === 200) {
+                    navigate('../opencall')
                     console.log(resRej.data)
                 };
                 if (resFav.status === 200) {
-                    navigate('opencall/gallery');
+                    navigate('../opencall');
                 };
             } else {
                 const selectedSoldImageIds = soldImages.map((index) => itemData[index].id);
                 const selectedRetImageIds = returnedImages.map((index) => itemData[index].id);
 
-                const resSold = selectedSoldImageIds.length > 0 && await axios.patch(`/api/opencall/artstatus?status=sold&imageIds=${selectedSoldImageIds}&opencallId=${opencallInfo.id}`);
+                const resSold = selectedSoldImageIds.length > 0 &&
+                    await axios.patch(`/api/opencall/artstatus?status=sold&imageIds=${selectedSoldImageIds}&opencallId=${opencallInfo.id}`);
                 if (resSold.status === 200) {
                     createMessage(selectedSoldImageIds, "sold");
+                    navigate('../opencall');
                 };
-                const resRet = selectedRetImageIds.length > 0 && await axios.patch(`/api/opencall/artstatus?status=returned&imageIds=${selectedRetImageIds}&opencallId=${opencallInfo.id}`);
+                const resRet = selectedRetImageIds.length > 0 &&
+                    await axios.patch(`/api/opencall/artstatus?status=returned&imageIds=${selectedRetImageIds}&opencallId=${opencallInfo.id}`);
                 if (resRet.status === 200) {
                     createMessage(selectedRetImageIds, "returned");
+                    navigate('../opencall');
                 };
             };
         } catch (error) {

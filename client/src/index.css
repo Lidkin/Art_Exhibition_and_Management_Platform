@@ -5,6 +5,14 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+}
+html{
+  background: url('./media/artist.jpg');
+  background-size: cover;
+  background-position: center;
+    /* background: linear-gradient(rgb(215, 41, 6), black);  */
+    height: 100%; 
 }
 
 code {

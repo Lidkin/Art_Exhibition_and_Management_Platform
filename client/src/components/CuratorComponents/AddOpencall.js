@@ -1,9 +1,13 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, createContext, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AddPhotoAlternateTwoToneIcon from '@mui/icons-material/AddPhotoAlternateTwoTone';
-import { Box, TextField, Button, Grid } from "@mui/material";
+import { Box, TextField, Button, Grid, Stack, ButtonGroup } from "@mui/material";
 import { styled } from '@mui/material/styles';
+import CalendarComp from "../CalendarComp";
+import DateRangeComp from "../DateRangeComp";
+import { DateContext, DateRangeContext } from '../Contexts';
+import '../../styles/Curator.style.css';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -18,12 +22,13 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 function AddOpencall(props) {
-
     const [openCall, setOpencall] = useState({});
     const [selectedImage, setSelectedImage] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const fileInputRef = useRef(null);
+    const { dateValue, setDateValue } = useContext(DateContext);
+    const { dates, setDates } = useContext(DateRangeContext);
 
     const navigate = useNavigate();
 
@@ -31,6 +36,16 @@ function AddOpencall(props) {
         const { name, value } = e.target;
         setOpencall({ ...openCall, [name]: value });
     };
+
+    const handleCancel = () => {
+        setDates([]);
+        setDateValue('');
+        setOpencall({});
+        setPreviewImage(null);
+        setSelectedImage(null);
+        setIsEditing(false);
+        navigate("./opencall");
+    }
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -57,12 +72,15 @@ function AddOpencall(props) {
     const handleClick = async () => {
         try {
             const formData = new FormData();
-
+console.log("image",selectedImage);
             if (selectedImage !== null) formData.append("file", selectedImage);
             for (const key in openCall) {
                 formData.append(key, openCall[key]);
             }
+            formData.append("deadline", dateValue);
+            formData.append("date", `[${dates})`);
 
+            console.log("form data",formData);
             const res = await axios.patch("/api/opencall/add", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
@@ -70,11 +88,13 @@ function AddOpencall(props) {
             });
 
             if (res.status === 200) {
+                setDates([]);
+                setDateValue('');
                 setOpencall({});
                 setPreviewImage(null);
                 setSelectedImage(null);
                 setIsEditing(false);
-                navigate("curator/opencall");
+                navigate("./opencall");
             }
         } catch (error) {
             console.error('Error uploading image:', error);
@@ -89,7 +109,7 @@ function AddOpencall(props) {
         <div className="addOpencall">
             {isEditing ? (
                 <>
-                    <Button
+                    <Button className="button"
                         variant="contained"
                         startIcon={<AddPhotoAlternateTwoToneIcon />}
                         onClick={handleUploadButtonClick}
@@ -118,8 +138,8 @@ function AddOpencall(props) {
                             />
                         )}
 
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
+                        <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                            <Grid item xs={6}>
                                 <>
                                     <TextField
                                         label="Name"
@@ -139,20 +159,6 @@ function AddOpencall(props) {
                                         label="Description"
                                         name="description"
                                         value={openCall.description}
-                                        onChange={handleInputChange}
-                                        margin="normal"
-                                    />
-                                    <TextField
-                                        label="Date"
-                                        name="date"
-                                        value={openCall.date}
-                                        onChange={handleInputChange}
-                                        margin="normal"
-                                    />
-                                    <TextField
-                                        label="Deadline"
-                                        name="deadline"
-                                        value={openCall.deadline}
                                         onChange={handleInputChange}
                                         margin="normal"
                                     />
@@ -184,19 +190,30 @@ function AddOpencall(props) {
                                         onChange={handleInputChange}
                                         margin="normal"
                                     />
+
                                 </>
                             </Grid>
                         </Grid>
+                        <Stack spacing={2} direction="row">
+                            <div className="dates"><h3>Deadline</h3><CalendarComp /></div>
+                            <div className="dates"><h3>Dates</h3><DateRangeComp /></div>
+                        </Stack>
                     </Box>
                 </>
             ) : null}
             <div>
                 {isEditing ? (
-                    <Button variant="contained" color="primary" onClick={handleClick}>
-                        Save
-                    </Button>
+                    <>
+                        <Button className="button" variant="contained" onClick={handleClick}>
+                            Save
+                        </Button>
+                        <Button className="button" variant="contained" onClick={handleCancel}>
+                            Cancel
+                        </Button>
+                    </>
                 ) : (
-                    <Button variant="contained" color="primary" onClick={handleEditClick}>
+
+                    <Button className="button" variant="contained" onClick={handleEditClick}>
                         Add Opencall
                     </Button>
                 )}

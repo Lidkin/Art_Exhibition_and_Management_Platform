@@ -127,7 +127,7 @@ const LoginRegister = (props) => {
                         </RadioGroup>
                     </FormControl>
                     <TextField
-                        sx={{ m: 1 }}
+                         sx={{ m: 1 }}
                         id="username"
                         type="text"
                         label="Enter username"
@@ -144,8 +144,10 @@ const LoginRegister = (props) => {
                     />
                 </Box>
             ) : (
-                <Box component={"form"} sx={{ m: 1 }} noValidate autoComplete="off">
-                    <TextField
+                <Box component={"form"} sx={{ m: 1 }} noValidate>
+                        <TextField
+                            autoComplete={username}
+                            value={username !== undefined ? username : ''}
                         sx={{ m: 1 }}
                         id="username"
                         type="text"
@@ -153,7 +155,9 @@ const LoginRegister = (props) => {
                         variant="outlined"
                         onChange={(e) => setUsername(e.target.value)}
                     />
-                    <TextField
+                        <TextField
+                            autoComplete={password}
+                            value={password !== undefined ? password : ''}
                         sx={{ m: 1 }}
                         id="password"
                         type="password"

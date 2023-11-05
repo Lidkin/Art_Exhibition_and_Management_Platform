@@ -13,11 +13,12 @@ import {
     DialogContent,
     DialogTitle
 } from "@mui/material";
-import { ActiveOpencallContext, ArtInOpencall } from "../Artist";
+import { ActiveOpencallContext, ArtInOpencallContext } from "../Artist";
 import usePrevious from "../../hooks/usePrevious";
 import ChangeArtInfo from "./ChangeArtInfo";
 import OpencallInfo from "./OpencallInfo";
 import '../../styles/Artist.style.css';
+import { useNavigate } from "react-router-dom";
 
 function ArtistGallery(props) {
     const [itemData, setItemdata] = useState('');
@@ -26,13 +27,15 @@ function ArtistGallery(props) {
     const [selectedImage, setSelectedImage] = useState('');
     const [forSubmitImages, setSubmitImages] = useState([]);
     const { opencallContext, setOpencallContext } = useContext(ActiveOpencallContext);
-    const { artInOpencallContext, setArtInOpencallContext } = useContext(ArtInOpencall);
+    const { artInOpencall, setArtInOpencall } = useContext(ArtInOpencallContext);
     const [selectedCard, setSelectedCard] = useState('');
     const [approvedArt, setApprovedArts] = useState(null);
     const [buttonClicked, setButtonClicked] = useState(false);
     const [message, setMessage] = useState('');
     const [cardOfOpencall, setCardOfOpencall] = useState({});
     const prevOpencallContext = usePrevious(opencallContext);
+
+    const navigate = useNavigate();
 
 
     const handleCardHover = (index) => {
@@ -49,12 +52,18 @@ function ArtistGallery(props) {
             try {
                 const res = await axios.get("/api/gallery/allimages");
                 if (res.status === 200) {
+                    console.log("images", res.data);
                     setItemdata(res.data);
                     const ids = res.data.map(item => item.id); //array of images
-                    console.log("array", ids);
-                    setArtInOpencallContext(ids);
+                    setArtInOpencall({ ...artInOpencall, allArt: ids });
+                    const resArt = await axios.get(`/api/gallery/artinopencall?imageIds=${ids}&status=approved,submitted`);
+                    if (resArt.status === 200) { 
+                        const opencallIds = resArt.data;
+                        setArtInOpencall({ ...artInOpencall, inOpencall: opencallIds })
+                    }
                     setLoading(false);
                 };
+                
             } catch (error) {
                 console.log(error);
                 setLoading(false);
@@ -89,7 +98,7 @@ function ArtistGallery(props) {
         };
 
         const difference = updatedSubmittedImages.length - opencallContext.maxnumber; // value for checking limit of works for submition
-        difference > 0 ? setMessage(`Max number of artworks is ${opencallContext.maxnumber}. Please, unselect ${(difference)} ${difference === 1 ? "artwork" : "artworks"}.`) : setMessage('');
+        difference > 0 ? setMessage(`The maximum number of artworks allowed is ${opencallContext.maxnumber}. Please deselect ${difference} ${difference === 1 ? "artwork" : "artworks"} to meet this limit.`) : setMessage('');
         setSubmitImages(updatedSubmittedImages);
         setButtonClicked(false);
         console.log("max number of art", opencallContext.maxnumber, "for submit", updatedSubmittedImages.length, "message", message)
@@ -103,6 +112,7 @@ function ArtistGallery(props) {
                 addImage(id);
             });
             setButtonClicked(true);
+            navigate('/');
             
         } catch (error) {
             console.log(error);
@@ -128,6 +138,15 @@ function ArtistGallery(props) {
     const isImageSubmitted = (index) => {
         return buttonClicked && forSubmitImages.includes(index);
     };
+
+    const alredyInOpencall = (item) => { 
+        const alredySubmitted = item.opencall_info.map(item => {
+            if (item.image_status === null) return false;
+            return (item.image_status.includes('submitted') || item.image_status.includes('approved'))
+        })
+        console.log("item in opencall", alredySubmitted.includes(true));
+        return alredySubmitted.includes(true);
+    }
 
     return (
         <>
@@ -162,12 +181,13 @@ function ArtistGallery(props) {
                                             </Container>
                                         <CardContent key={item.id}>
                                             {opencallContext.name && 
-                                                <FormControlLabel
+                                                <FormControlLabel                                               
                                                     key={item.id}
                                                     control={<Checkbox
                                                         checked={forSubmitImages.includes(index)}
                                                         onChange={() => toggleSubmit(index)}
-                                                        disabled={isImageSubmitted(index) ? true : false}
+                                                        disabled={alredyInOpencall(item)}
+                                                        // disabled={isImageSubmitted(index) ? true : false}
                                                         inputProps={{ 'aria-label': 'controlled' }}
                                                     />}
                                                     label={buttonClicked && isImageSubmitted(index) ? opencallContext.name : ""}

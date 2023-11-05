@@ -1,6 +1,7 @@
+const { query } = require('express');
 const { _addOpencall, _allOpencalls, _opencallByImageId,
     _opencallByStatus, _getOpencall, _changeImageStatus,
-    _artImagesByOpencall, _countArt } = require('../models/opencall.model.js');
+    _artImagesByOpencall, _countArt, _opencallsForArtist } = require('../models/opencall.model.js');
 const { S3Uploadv3 } = require('../s3Service.js');
 
 const addOpencall = async (req, res) => {
@@ -8,7 +9,7 @@ const addOpencall = async (req, res) => {
     try {
         const username = req.user.username;
 
-        if (req.file !== undefined || req.file !== null) {
+        if (req.file !== undefined) {
             console.log("file", req.file);
             const imageUrl = await S3Uploadv3(req.file, "posters");
             opencallInfo = { ...req.body, url: imageUrl.Location };
@@ -53,11 +54,21 @@ const opencallByStatus = async (req, res) => {
     };
 };
 
+const opencallsForArtist = async (req, res) => {
+    try {
+        const status = req.query.status;
+        const opencallIds = req.query.opencallIds;
+        const row = await _opencallsForArtist(status, opencallIds);
+        res.json(row);
+    } catch (error) {
+        console.log("opencalls by status for artist", error);
+    };
+};
+
 const getOpencall = async (req, res) => {
     try {
-        const username = req.user.username;
         const id = req.query.id;
-        const row = await _getOpencall(id, username);
+        const row = await _getOpencall(id);
         res.json(row);
     } catch (error) {
         console.log(error);
@@ -66,7 +77,6 @@ const getOpencall = async (req, res) => {
 
 const changeImageStatus = async (req, res) => { //change status of artwork to accepted or rejected
     try {
-        console.log("query=>",req.query.imageIds);
         const status = req.query.status;
         const imageIds = req.query.imageIds;
         const opencallId = req.query.opencallId;
@@ -99,5 +109,5 @@ const countArt = async (req, res) => {
 module.exports = {
     addOpencall, allOpencalls, opencallByStatus,
     opencallByImageId, getOpencall, changeImageStatus,
-    artImagesByOpencall, countArt
+    artImagesByOpencall, countArt, opencallsForArtist
 };

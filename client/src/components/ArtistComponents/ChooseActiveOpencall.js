@@ -1,48 +1,36 @@
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { Button, InputLabel, FormControl, Select, Box, MenuItem } from "@mui/material";
-import { ActiveOpencallContext, ArtInOpencall } from "../Artist";
+import { InputLabel, FormControl, Select, Box, MenuItem } from "@mui/material";
+import { ActiveOpencallContext, ArtInOpencallContext } from "../Artist";
 
 function ChooseOpencall(props) {
     const [activeOpencall, setActiveOpencall] = useState('');
-    const [listActiveOpencalls, setListOpencalls] = useState('');
+    const [listActiveOpencalls, setListOpencalls] = useState([]);
     const { opencallContext, setOpencallContext } = useContext(ActiveOpencallContext);
-    const { artInOpencallContext, setArtInOpencallContext } = useContext(ArtInOpencall); // here income array of all user's art ids
+    const { artInOpencall, setArtInOpencall } = useContext(ArtInOpencallContext); // here income array of all user's art ids
+
+    console.log("art in opencall", artInOpencall.inOpencall.length);
 
     useEffect(() => {
         const getActiveOpencalls = async () => {
+            //show opencalls with status active when artist dont have his work
             try {
                 const arrOpencalls = [];
-                const res = await axios.get("/api/opencall/status?status=active");
+                const opencallIds = artInOpencall.inOpencall.length > 0 ? artInOpencall.inOpencall.map(item => item.opencall_id) : '';
+                console.log("opencall Ids",opencallIds);
+                const res = await axios.get(`/api/opencall/list?status=active&opencallIds=${opencallIds}`);
                 if (res.status === 200) {
                     arrOpencalls.push(res.data.map((item) => { return { name: item.name, id: item.id, maxnumber: item.maxnumber, width: item.max_width, height: item.max_height } }));
-                    console.log("opencalls", arrOpencalls[0]);
-                    setListOpencalls(arrOpencalls[0]); //array of active opencalls
-                };
-                if (artInOpencallContext.length > 0) {
-                    const resList = await axios.get(`/api/gallery/listopencalls?ids=${artInOpencallContext}`);
-                    if (resList.status === 200) {
-                        const opencallIds = resList.data;
-                        console.log("ids of opencalls", opencallIds)
-                        setArtInOpencallContext({ opencallIds: opencallIds }) // list of opencalls where arts was submit to
-
-                        if (arrOpencalls.length > 0) {
-                            const newArr = arrOpencalls[0].filter(obj => !opencallIds.includes(obj.id));
-                            console.log("newArray",newArr)
-                            setListOpencalls(newArr);
-                        }
-                    };
+                    setListOpencalls(arrOpencalls[0]);
                 }
-                
             } catch (error) {
                 console.log(error);
             };
         };
-        getActiveOpencalls();
-    }, [artInOpencallContext]);
+        if (artInOpencall.inOpencall.length > 0) getActiveOpencalls();
+    }, [artInOpencall]);
 
-
-    const handleChange = (event) => {
+    const handleChange = async (event) => {
         const id = event.target.value;
         if (id === '') {
             setOpencallContext({});
@@ -52,6 +40,12 @@ function ChooseOpencall(props) {
             console.log(" from list opencalls", opencall);
             setActiveOpencall(opencall.id);
             setOpencallContext(opencall);
+            const res = await axios.get(`/api/gallery/getids?opencall_id=${opencall.id}`);
+            if (res.status === 200) { 
+                const data = res.data;
+                const imageIds = data.map(item => item.image_id);
+                setArtInOpencall({ ...artInOpencall, inOpencall: imageIds })
+            }
         }
     };
 

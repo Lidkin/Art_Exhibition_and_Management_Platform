@@ -29,6 +29,11 @@ function AddArt(props) {
 
     const handleClose = () => { 
         setOpen(false);
+        setArtimage({});
+        setPreviewImage(null);
+        setSelectedImage(null);
+        setIsEditing(false);
+        navigate("./gallery");
     }
 
     const handleInputChange = (e) => {
@@ -77,7 +82,7 @@ function AddArt(props) {
                 setSelectedImage(null);
                 setIsEditing(false);
                 setOpen(false);
-                navigate("artist/gallery");
+                navigate("./gallery");
             }
         } catch (error) {
             console.error('Error uploading image:', error);

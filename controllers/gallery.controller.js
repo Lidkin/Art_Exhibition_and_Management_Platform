@@ -1,7 +1,7 @@
 const { _addArtImage, _allArtImages, _getArtImage,
-   _addArtImageToOpencall, _deleteOpencallImage,
+    _addArtImageToOpencall, _deleteOpencallImage,
     _updateArtInfo, _getArtImagesIdsByOpencall, _listOpencallsForSubbmit,
-    _getImageStatus} = require('../models/gallery.model.js');
+    _getImageStatus, _allArtInOpencalls } = require('../models/gallery.model.js');
 const { S3Uploadv3 } = require('../s3Service.js');
 
 const addArtImage = async (req, res) => {  // add art image and info to table "image"
@@ -31,8 +31,28 @@ const listOpencallsForSubbmit = async (req, res) => {  // /api/gallery/listopenc
 const allArtImages = async (req, res) => {  // all images of user with role=artist
     try {
         const username = req.user.username;
-        const row = await _allArtImages(username);
-        res.json(row);
+        const rows = await _allArtImages(username);
+
+        const imageMap = new Map();
+        rows.forEach((row) => {
+            const imageId = row.id;
+            const imageStatus = row.image_status;
+            const opencallName = row.opencallName;
+            if (!imageMap.has(imageId)) {
+                imageMap.set(imageId, {
+                    ...row,
+                    opencall_info: [],
+                });
+            }
+
+            imageMap.get(imageId).opencall_info.push({
+                image_status: row.image_status,
+                opencall_name: row.opencall_name
+            });
+        });
+
+        const result = Array.from(imageMap.values());
+        res.json(result);
     } catch (error) {
         console.log(error);
     };
@@ -52,8 +72,8 @@ const addArtImageToOpencall = async (req, res) => {  // add image_id, opencall_i
     try {
         const opencall_id = req.body.opencall_id;
         const image_id = req.body.image_id;
-        const status = req.query.status;
-        const row = await _addArtImageToOpencall(opencall_id, image_id, status);
+        const image_status = req.query.status;
+        const row = await _addArtImageToOpencall(opencall_id, image_id, image_status);
         res.json(row);
     } catch (error) {
         console.log(error);
@@ -72,21 +92,33 @@ const deleteOpencallImage = async (req, res) => {
     }
 };
 
+const allArtInOpencalls = async (req, res) => {
+    try {
+        const imageIds = req.query.imageIds;
+        const status = req.query.status;
+        const row = await _allArtInOpencalls(status, imageIds);
+        res.json(row);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 // const changeImageStatus = async (req, res) => {
-    // try {
-        // const { status, ids } = req.body;
-        // const data = await _changeImageStatus(status, ids);
-        // res.json(data);
-    // } catch (error) {
-        // console.log(error);
-    // }
+// try {
+// const { status, ids } = req.body;
+// const data = await _changeImageStatus(status, ids);
+// res.json(data);
+// } catch (error) {
+// console.log(error);
+// }
 // };
- 
-const updateArtInfo = async (req, res) => { 
+
+const updateArtInfo = async (req, res) => {
     try {
         const id = req.query.id;
         const artInfo = req.body;
         const data = await _updateArtInfo(id, artInfo);
+        console.log("update return",data);
         res.json(data);
     } catch (error) {
         console.log(error);
@@ -97,6 +129,7 @@ const getArtImagesIdsByOpencall = async (req, res) => {
     try {
         const opencall_id = req.query.opencall_id;
         const data = await _getArtImagesIdsByOpencall(opencall_id);
+        console.log("image ids", data);
         res.json(data);
     } catch (error) {
         console.log(error);
@@ -117,5 +150,5 @@ module.exports = {
     addArtImage, allArtImages, getArtImage,
     addArtImageToOpencall, deleteOpencallImage,
     updateArtInfo, getArtImagesIdsByOpencall, listOpencallsForSubbmit,
-    getImageStatus
+    getImageStatus, allArtInOpencalls
 };

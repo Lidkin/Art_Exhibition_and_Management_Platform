@@ -1,8 +1,114 @@
+.AppBody {
+  text-align: center;
+  background-image: url('media/artist.jpg');
+  background-size: cover;
+  background-position: center;
+  min-height: 100ch;
+  overflow-y: hidden;
+}
 
-.App {
+.header {
+  position: sticky;
+  top: 0;
+  background-color: rgba(182, 2, 2, 0.801);
+  width: 100%;
+}
+
+.header>.MuiStack-root {
+  justify-content: flex-start;
+}
+
+.container {
+  background-color: black;
+  color: antiquewhite;
+  padding: 0% 1% 1% 1%;
   text-align: center;
 }
 
-.imageItem{
+.footer {
+  background-color: black;
+  bottom: 0;
+  position: sticky;
+}
+
+@media (max-width: 1200) {
+      .header {
+          margin-top: 15px;
+          margin-bottom: 5px;
+        }
+  .header > .MuiStack-root {
+    margin: 10px;
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1201px) {
+      .header {
+          margin-top: 30px;
+          margin-bottom: 5px;
+        }
+    .header> .MuiStack-root {
+        margin: 10px;
+          padding: 10px;
+          font-size: 14px;
+  }
+}
+/*  */
+/* @media (min-width: 481px) and (max-width: 1080px) { */
+   /* .css-2W8n31 { */
+    /* min-height: 38ch; */
+    /* max-height: 100ch; */
+  /* } */
+/* } */
+
+.MuiStack-root {
+  margin-left: 1%;
+}
+
+.imageItem {
   box-shadow: 6px 6px 2px 1px rgba(0, 0, 255, .2);
+}
+
+input.inputBox {
+  font-size: 22px;
+  padding: 5px 8px 4px 8px;
+  border-radius: 15px;
+  border: 1px solid #666;
+}
+
+.calendarWrap {
+  /* display: inline-block; */
+  position: relative;
+}
+
+.calendarElement {
+  position: absolute;
+  /* left: 50%; */
+  /* transform: translateX((-50%)); */
+  top: 40px;
+  border: 1px solid #ccc;
+  z-index: 999;
+}
+
+h1,
+h2 {
+  margin-top: 0%;
+  padding-top: 2%;
+}
+
+.MuiInputBase-root.MuiOutlinedInput-root {
+  border-radius: 15px;
+  background-color: rgba(250, 235, 215, 0.637);
+}
+
+#demo-radio-buttons-group-label.MuiFormLabel-root {
+  font-weight: bold;
+  color: black;
+  border-radius: 15px;
+  background-color: rgba(250, 235, 215, 0.641);
+}
+
+.MuiTypography-root.MuiTypography-body1.MuiFormControlLabel-label {
+  font-weight: bold;
 }

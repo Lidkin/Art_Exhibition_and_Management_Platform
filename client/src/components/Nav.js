@@ -57,26 +57,29 @@ const Nav = (props) => {
 
     return (
         <Stack spacing={2} direction={"row"}>
+            {role === null && 
+            <>
             <Button component={Link} to="/">
                 Home
             </Button>
-            {role === null ? (<Button component={Link} to="/login">
+                {/* {role === null ? (<Button component={Link} to="/login"> */}
+                <Button component={Link} to="/login">
                 Login
-            </Button>) : null}
-            {role === null ? (<Button component={Link} to="/register">
+            </Button>
+                {/* {role === null ? (<Button component={Link} to="/register"> */}
+            <Button component={Link} to="/register">
                 Register
-            </Button>) : null}
-
+            </Button>
+            </>
+            }
+            {role === 'artist' && <Button component={Link} to="artist/gallery">
+                Home
+            </Button>}
+            {role === 'curator' && <Button component={Link} to="curator/opencall">
+                Home
+            </Button>}
             {role !== null ? (<Button onClick={logout}>Logout</Button>) : null}
-            {role !== null ? (<Button component={Link} to="/profile">
-                Profile
-            </Button>) : null}
-            {role === 'artist' ? (<Button component={Link} to="artist/gallery">
-                Gallery
-            </Button>) : null}
-            {role === 'curator' ? (<Button component={Link} to="curator/opencall">
-                Opencall
-            </Button>) : null}
+            {role !== null ? (<Button component={Link} to="/profile">Profile</Button>) : null}
         </Stack>
     );
 };

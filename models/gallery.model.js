@@ -1,21 +1,37 @@
 const { db } = require('../config/db.js');
 const userId = require('../modules/userid.js');
 
-const _allArtImages = async (username) => {  // all images of user with role=artist
+const _allArtImages = async (username) => {
     const user_id = await userId(username);
+
     return db("image")
-        .where({ user_id })
-        .join("size", "image.size_id", "size.id")
-        .select("image.id", "image.url", "image.name", "image.creation_year", "image.price", "image.description", "size.width", "size.height")
-        .orderBy("id")
-        .returning(["id", "url", "name", "creation_year", "price", "description", "width", "height"]);
+        .select([
+            "image.id",
+            "image.url",
+            "image.name",
+            "image.creation_year",
+            "image.price",
+            "image.description",
+            "size.width",
+            "size.height",
+        ])
+        .distinct("image.id")
+        .leftJoin("size", "image.size_id", "size.id")
+        .leftJoin("opencall_image", "opencall_image.image_id", "image.id")
+        .leftJoin("opencall", "opencall_image.opencall_id", "opencall.id")
+        .select([
+            "opencall_image.image_status",
+            "opencall.name as opencall_name"
+        ])
+        .where("image.user_id", user_id)
+        .orderBy("image.id");
 };
 
 const _listOpencallsForSubbmit = async (ids) => {  // /api/gallery/listopencalls?ids=ids
     const imageIds = ids.split(',');
-    return db("opencall_image").select("opencall_id")
-        .whereIn("image_id", imageIds)
-        .andWhereNot("status", "null");
+    return db("opencall_image")
+        .select("opencall_id")
+        .whereIn("image_id", imageIds);
 };
 
 const _getArtImage = async (image_id) => {
@@ -28,16 +44,16 @@ const _getArtImage = async (image_id) => {
 };
 
 const _getArtImagesIdsByOpencall = async (opencall_id) => {
-    console.log("opencall id ",opencall_id);
+    console.log("opencall id ", opencall_id);
     return db("opencall_image")
         .where("opencall_id", opencall_id)
         .select("image_id")
         .returning(["image_id"]);
 };
 
-const _getImageStatus = async (id) => { 
+const _getImageStatus = async (id) => {
     return db("opencall_image")
-        .select("status")
+        .select("image_status")
         .where("image_id", id);
 };
 
@@ -55,9 +71,9 @@ const _addArtImage = async (username, url, artImageInfo) => {   // add art image
         .returning(["id"]);
 };
 
-const _addArtImageToOpencall = async (opencall_id, image_id, status) => { // add image_id, opencall_id and status to table "opencall_image" with end-point /addimageopencall
+const _addArtImageToOpencall = async (opencall_id, image_id, image_status) => { // add image_id, opencall_id and status to table "opencall_image" with end-point /addimageopencall
     return db("opencall_image")
-        .insert({ opencall_id, image_id, status });
+        .insert({ opencall_id, image_id, image_status });
 };
 
 const _deleteOpencallImage = async (opencall_id, image_id) => {
@@ -73,16 +89,19 @@ const _deleteOpencallImage = async (opencall_id, image_id) => {
     }
 };
 
-// const _changeImageStatus = async (status, ids, opencall_id) => {  // axios.patch("/api/gallery/status", { status: "submitted", ids: selectedImageIds })
-//     try {
-//         return db("opencall_image")
-//             .whereIn("image_id", ids)
-//             .andWhere("opencall_id", opencall_id)
-//             .update({ status: status });
-//     } catch (error) {
-//         console.log(error);
-//     };
-// };
+const _allArtInOpencalls = async (status, imageIds) => {
+    try {
+        const ids = imageIds.length > 1 ? imageIds.split(',') : [imageIds];
+        const arrStatus = status.split(',');
+        return db("opencall_image")
+            .distinct("opencall_id")
+            .whereIn("image_status", arrStatus)
+            .whereIn("image_id", ids);
+    } catch (error) {
+        console.log(error);
+    }
+
+}
 
 const _updateArtInfo = async (id, artInfo) => {
     try {
@@ -132,5 +151,5 @@ module.exports = {
     _addArtImage, _allArtImages, _getArtImage,
     _addArtImageToOpencall, _deleteOpencallImage,
     _updateArtInfo, _getArtImagesIdsByOpencall, _listOpencallsForSubbmit,
-    _getImageStatus
+    _getImageStatus, _allArtInOpencalls
 };
