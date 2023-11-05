@@ -33,8 +33,8 @@ app.use('/api/opencall', oRouter);
 
 app.listen(process.env.PORT, console.log(`listening on ${process.env.PORT}`));
 
-// app.use(express.static(path.join(__dirname, "client/build")));
-// 
-// app.get("*", (req, res) => {
-    // res.sendFile(path.resolve(__dirname, "./client/build", "index.html"))
-// });
+app.use(express.static(path.join(__dirname, "client/build")));
+
+app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "./client/build", "index.html"))
+});
