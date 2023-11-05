@@ -27,7 +27,7 @@ function ChooseOpencall(props) {
                 console.log(error);
             };
         };
-        if (artInOpencall.inOpencall.length > 0) getActiveOpencalls();
+        getActiveOpencalls();
     }, [artInOpencall]);
 
     const handleChange = async (event) => {
