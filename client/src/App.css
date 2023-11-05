@@ -12,6 +12,7 @@
   top: 0;
   background-color: rgba(182, 2, 2, 0.801);
   width: 100%;
+  z-index: 990;
 }
 
 .header>.MuiStack-root {
